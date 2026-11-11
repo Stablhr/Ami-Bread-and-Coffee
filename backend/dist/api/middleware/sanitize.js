@@ -13,7 +13,6 @@ function sanitizeObject(obj) {
         sanitizeObject(obj[key]);
     }
 }
-// I sanitize request payloads to reduce injection risks
 function sanitize(req, _res, next) {
     sanitizeObject(req.body);
     sanitizeObject(req.query);

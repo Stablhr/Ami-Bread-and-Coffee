@@ -43,11 +43,24 @@ function resolveAllowedOrigins(rawValue: string | undefined): string[] {
 
 const allowedOrigins = resolveAllowedOrigins(env.CORS_ORIGINS);
 
+const DEV_LOCALHOST_ORIGIN = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i;
+
+function isAllowedOrigin(origin: string): boolean {
+  if (allowedOrigins.includes(origin)) return true;
+  // In development the Next.js dev server may fall back to another port
+  // (3001, 3002, ...) when 3000 is busy. Accept any loopback origin so
+  // login/CORS keeps working; production stays strictly allowlisted.
+  return env.NODE_ENV !== 'production' && DEV_LOCALHOST_ORIGIN.test(origin);
+}
+
 app.use(helmet());
 app.use(httpsRedirect);
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || isAllowedOrigin(origin)) return callback(null, true);
+      return callback(null, false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'x-csrf-token']

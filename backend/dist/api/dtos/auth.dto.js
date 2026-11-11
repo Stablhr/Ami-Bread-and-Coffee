@@ -18,7 +18,7 @@ exports.registerDto = zod_1.z.object({
 });
 exports.verifyDto = zod_1.z.object({
     email: zod_1.z.string().email(),
-    code: zod_1.z.string().length(6) // always 6 digits from generateVerificationCode()
+    code: zod_1.z.string().length(6)
 });
 exports.resendVerificationDto = zod_1.z.object({
     email: zod_1.z.string().email()

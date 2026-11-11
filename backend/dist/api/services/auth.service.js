@@ -25,8 +25,6 @@ function getVerificationExpiry(minutes) {
 const ACCESS_TOKEN_TTL = '15m';
 const REFRESH_TOKEN_TTL = '7d';
 const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-// Rotated tokens within this window are treated as tab races / network
-// retries (another instance may have rotated first) instead of reuse.
 const ROTATION_GRACE_MS = 60 * 1000;
 function signAccessToken(userId, type) {
     return jsonwebtoken_1.default.sign({ userId, type }, env_1.env.JWT_SECRET, {
@@ -244,13 +242,8 @@ exports.authService = {
             throw new error_1.ApiError(401, errorCodes_1.ErrorCodes.UNAUTHORIZED, 'Invalid token');
         }
         if (!account.isVerified) {
-            // 401 (not 403) so clients treat it as a dead session and stop
-            // retrying refresh in a loop.
             throw new error_1.ApiError(401, errorCodes_1.ErrorCodes.UNAUTHORIZED, 'Invalid token');
         }
-        // Legacy refresh tokens issued before session tracking carry no jti.
-        // Accept them once and create a session on first use so existing
-        // users are not forced to re-login after this deploy.
         if (!payload.jti) {
             return createSessionAndIssueTokens({ id: account.id }, payload.type, {
                 meta
@@ -262,20 +255,14 @@ exports.authService = {
         }
         if (session.rotatedAt) {
             if (!isWithinGraceWindow(session.rotatedAt)) {
-                // Reuse of a token rotated beyond the grace window: assume
-                // compromise or a stale copy and revoke the whole family.
                 await refreshSession_repository_1.refreshSessionRepository.revokeFamily(session.familyId);
                 throw new error_1.ApiError(401, errorCodes_1.ErrorCodes.UNAUTHORIZED, 'Invalid token');
             }
-            // Tab race or network retry: another instance/tab already rotated
-            // this token. Issue a fresh valid pair in the same family instead
-            // of failing so the loser still stays signed in.
             return createSessionAndIssueTokens({ id: account.id }, payload.type, {
                 familyId: session.familyId,
                 meta
             });
         }
-        // Atomic rotation: only one concurrent caller can win this update.
         const newJti = (0, crypto_1.randomUUID)();
         const rotated = await refreshSession_repository_1.refreshSessionRepository.rotate(payload.jti, newJti);
         if (!rotated) {
@@ -315,12 +302,9 @@ exports.authService = {
                 return;
             const session = await refreshSession_repository_1.refreshSessionRepository.findByJti(payload.jti);
             if (session) {
-                // Revoke the whole family so grace-window duplicates die too.
                 await refreshSession_repository_1.refreshSessionRepository.revokeFamily(session.familyId);
             }
         }
-        catch {
-            // Invalid or expired token — nothing to revoke.
-        }
+        catch { }
     }
 };

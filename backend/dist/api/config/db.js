@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectDb = connectDb;
 const mongoose_1 = __importDefault(require("mongoose"));
 const env_1 = require("./env");
-// Cached across invocations on serverless platforms so warm Lambda
-// instances reuse the pooled connection instead of reconnecting.
 let connectionPromise = null;
 async function connectDb() {
     if (mongoose_1.default.connection.readyState === 1) {
