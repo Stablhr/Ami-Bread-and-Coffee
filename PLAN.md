@@ -912,20 +912,21 @@ E2E:
   - Files: `apps/web/app/(public)/design-tile/page.tsx`, `components/vintage/*`  
   - Acceptance: page shows palette, typography, badges, menu card, allergen notice, texture.
 
-- [ ] T-008 Normalize hero asset and implement `HeroSection`  
+- [x] T-008 Normalize hero asset and implement `HeroSection`  
   - Depends: T-004  
   - Files: `apps/web/public/hero-section.png`, `components/hero-section.tsx`  
   - Acceptance: hero renders with `next/image`, descriptive alt, no CLS.
 
-- [ ] T-009 Integrate Dish Orbit Carousel component  
+- [x] T-009 Integrate Dish Orbit Carousel component  
   - Depends: T-004  
   - Files: `apps/web/components/ui/dish-orbit-carousel.tsx`, `lib/menu-to-dish.ts`  
   - Acceptance: `npm i gsap` recorded; carousel renders featured items; reduced motion respected.
 
-- [ ] T-010 Compose home page  
+- [x] T-010 Compose home page  
   - Depends: T-007, T-008, T-009  
   - Files: `apps/web/app/(public)/page.tsx`  
   - Acceptance: hero, banner, gallery, how-to-order, reviews, message shop render.
+  - Note: reviews section intentionally omitted until real customer reviews exist (no invented testimonials).
 
 - [ ] T-011 Configure test tooling (Vitest, RTL, Playwright, axe)  
   - Depends: T-003, T-004  
@@ -1298,3 +1299,4 @@ All ingredient, allergen, and tag data: `OWNER TO CONFIRM`. Sample placeholders 
 
 - 2026-11-11: Initial plan created. Includes vintage design direction, Dish Orbit Carousel integration, hero asset `hero-section.png`, accessibility checklist, 55 numbered tasks, and deployment cost estimates.
 - 2026-11-11: Applied owner answers: Sampler Box consumes the four loaf caps; coffee/ingredient data uses sample placeholders; delivery fees use amount + distance bands; online payment proof is uploaded after order confirmation.
+- 2026-11-11: Phase 1 progress — fixed font theme tokens (display/accent utilities were never generated), added the static catalog (`lib/menu-data.ts`), `/menu` and `/menu/[slug]` pages, Ami-branded public header/footer with live open/closed status, integrated the Dish Orbit Carousel on the home page with optional rating/likes, optimized the hero asset (3.0 MB → 447 KB), and replaced boilerplate auth/dashboard branding. Fixed backend CORS so dev login works from any localhost port.

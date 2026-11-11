@@ -1,7 +1,6 @@
 'use client';
 import {useSearchParams} from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import {useRouter} from 'next/navigation';
 import {useLogout} from '@/lib/hooks/auth/useLogout';
 import {Home, Settings, LogOut, User} from 'lucide-react';
@@ -63,15 +62,11 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen cursor-default bg-gray-50">
       <aside className="hidden md:flex flex-col w-64 min-h-screen bg-black shadow-xl z-40">
-        <div className="flex items-center justify-center py-6 px-4 border-b border-gray-800">
-          <Image
-            src="/assets/logo.png"
-            alt="App logo"
-            width={130}
-            height={130}
-            className="object-contain drop-shadow-lg"
-            priority
-          />
+        <div className="flex flex-col items-center justify-center gap-1 border-b border-gray-800 px-4 py-6 text-center">
+          <span className="font-display text-xl text-white">Ami Bread &amp; Coffee</span>
+          <span className="font-sans text-xs uppercase tracking-widest text-gray-400">
+            Staff dashboard
+          </span>
         </div>
 
         <nav className="flex-1 flex flex-col gap-1 px-3 py-4 overflow-y-auto">

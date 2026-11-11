@@ -13,11 +13,11 @@ export type Dish = {
   alt?: string;
   eyebrow?: string;
   label?: string;
-  rating: number;
-  chef: string;
+  rating?: number;
+  chef?: string;
   kitchen?: string;
   description: string;
-  likes: number;
+  likes?: number;
   ingredients?: string[];
   accent: string;
 };
@@ -454,8 +454,12 @@ export function DishOrbitCarousel({
           </div>
 
           <div className="dsh-acts">
-            <button type="button" className="dsh-btn" onClick={() => dish && onPlay?.(dish, index)}>{Icon.play}Play video</button>
-            <button type="button" className="dsh-btn" onClick={() => dish && onOrder?.(dish, index)}>{Icon.order}Order food</button>
+            {onPlay ? (
+              <button type="button" className="dsh-btn" onClick={() => dish && onPlay(dish, index)}>{Icon.play}Play video</button>
+            ) : null}
+            {onOrder ? (
+              <button type="button" className="dsh-btn" onClick={() => dish && onOrder(dish, index)}>{Icon.order}Order food</button>
+            ) : null}
           </div>
 
           <div className="dsh-card">
@@ -469,29 +473,33 @@ export function DishOrbitCarousel({
             <div className="dsh-bodies">
               {dishes.map((d, i) => (
                 <div key={i} ref={(el) => { bodies.current[i] = el; }} className="dsh-body" aria-hidden={i !== index}>
-                  <div className="dsh-rate">
-                    <div className="dsh-badge" style={{ background: d.accent }}>
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.2l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" /></svg>
+                  {typeof d.rating === "number" ? (
+                    <div className="dsh-rate">
+                      <div className="dsh-badge" style={{ background: d.accent }}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.2l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" /></svg>
+                      </div>
+                      <span className="dsh-num" aria-label={"Rated " + d.rating.toFixed(1) + " out of 5"}>{d.rating.toFixed(1)}</span>
                     </div>
-                    <span className="dsh-num" aria-label={"Rated " + d.rating.toFixed(1) + " out of 5"}>{d.rating.toFixed(1)}</span>
-                  </div>
-                  <p className="dsh-chef">{d.chef}</p>
-                  <p className="dsh-kit">{d.kitchen ?? " "}</p>
+                  ) : null}
+                  {d.chef ? <p className="dsh-chef">{d.chef}</p> : null}
+                  {d.kitchen ? <p className="dsh-kit">{d.kitchen}</p> : null}
                   {tab === "overview" || !d.ingredients?.length ? (
                     <p className="dsh-desc">{d.description}</p>
                   ) : (
                     <ul className="dsh-ing">{d.ingredients.map((x) => <li key={x}>{x}</li>)}</ul>
                   )}
-                  <div className="dsh-react">
-                    <button type="button" className="dsh-btn dsh-like" aria-pressed={!!liked[i]} tabIndex={i === index ? 0 : -1}
-                      onClick={() => { setLiked((s) => ({ ...s, [i]: !s[i] })); setDisliked((s) => ({ ...s, [i]: false })); }}>
-                      {Icon.up}{d.likes + (liked[i] ? 1 : 0)} likes
-                    </button>
-                    <button type="button" className="dsh-btn dsh-meh" aria-pressed={!!disliked[i]} aria-label="Not for me" tabIndex={i === index ? 0 : -1}
-                      onClick={() => { setDisliked((s) => ({ ...s, [i]: !s[i] })); setLiked((s) => ({ ...s, [i]: false })); }}>
-                      {Icon.down}
-                    </button>
-                  </div>
+                  {typeof d.likes === "number" ? (
+                    <div className="dsh-react">
+                      <button type="button" className="dsh-btn dsh-like" aria-pressed={!!liked[i]} tabIndex={i === index ? 0 : -1}
+                        onClick={() => { setLiked((s) => ({ ...s, [i]: !s[i] })); setDisliked((s) => ({ ...s, [i]: false })); }}>
+                        {Icon.up}{d.likes + (liked[i] ? 1 : 0)} likes
+                      </button>
+                      <button type="button" className="dsh-btn dsh-meh" aria-pressed={!!disliked[i]} aria-label="Not for me" tabIndex={i === index ? 0 : -1}
+                        onClick={() => { setDisliked((s) => ({ ...s, [i]: !s[i] })); setLiked((s) => ({ ...s, [i]: false })); }}>
+                        {Icon.down}
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>

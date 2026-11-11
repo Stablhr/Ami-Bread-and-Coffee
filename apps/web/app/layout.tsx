@@ -7,22 +7,22 @@ import ReactQueryProvider from '@/lib/provider/ReactQueryProvider';
 const display = DM_Serif_Display({
   subsets: ['latin'],
   weight: '400',
-  variable: '--font-display'
+  variable: '--font-display-loaded'
 });
 
 const body = Lora({
   subsets: ['latin'],
-  variable: '--font-body'
+  variable: '--font-body-loaded'
 });
 
 const ui = Nunito_Sans({
   subsets: ['latin'],
-  variable: '--font-ui'
+  variable: '--font-ui-loaded'
 });
 
 const accent = Caveat({
   subsets: ['latin'],
-  variable: '--font-accent'
+  variable: '--font-accent-loaded'
 });
 
 export const metadata: Metadata = {

@@ -34,10 +34,10 @@
   --color-status-ready: var(--status-ready);
   --color-status-completed: var(--status-completed);
   --color-status-cancelled: var(--status-cancelled);
-  --font-sans: var(--font-ui);
-  --font-serif: var(--font-body);
-  --font-display: var(--font-display);
-  --font-accent: var(--font-accent);
+  --font-sans: var(--font-ui-stack);
+  --font-serif: var(--font-body-stack);
+  --font-display: var(--font-display-stack);
+  --font-accent: var(--font-accent-stack);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -78,10 +78,12 @@
   --status-ready: #15803D;
   --status-completed: #4B5563;
   --status-cancelled: #B91C1C;
-  --font-display: "DM Serif Display", serif;
-  --font-body: "Lora", serif;
-  --font-ui: "Nunito Sans", sans-serif;
-  --font-accent: "Caveat", cursive;
+  /* Font stacks. next/font sets the *-loaded variables on <html>; the
+     literal names are fallbacks for the brief moment before fonts load. */
+  --font-display-stack: var(--font-display-loaded, "DM Serif Display", serif);
+  --font-body-stack: var(--font-body-loaded, "Lora", serif);
+  --font-ui-stack: var(--font-ui-loaded, "Nunito Sans", sans-serif);
+  --font-accent-stack: var(--font-accent-loaded, "Caveat", cursive);
 }
 
 @layer base {
@@ -92,10 +94,11 @@
     font-size: 18px;
   }
   body {
-    @apply bg-paper text-espresso font-[family-name:var(--font-body)];
+    @apply bg-paper text-espresso;
+    font-family: var(--font-body-stack);
     min-height: 100vh;
   }
   h1, h2, h3 {
-    font-family: var(--font-display);
+    font-family: var(--font-display-stack);
   }
 }

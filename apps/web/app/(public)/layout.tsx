@@ -1,36 +1,20 @@
-import Link from 'next/link';
+import { SiteFooter } from "@/components/sections/site-footer";
+import { SiteHeader } from "@/components/sections/site-header";
 
-export default function PublicLayout({children}: {children: React.ReactNode}) {
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white">
-      <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-          <Link href="/" className="text-sm font-semibold tracking-tight">
-            Express Next Auth Kit
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/docs"
-              className="text-sm text-gray-500 transition-colors hover:text-black"
-            >
-              Docs
-            </Link>
-            <Link
-              href="/sign-in"
-              className="text-sm text-gray-500 transition-colors hover:text-black"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/sign-up"
-              className="rounded-full bg-black px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-gray-800"
-            >
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </header>
-      <main>{children}</main>
+    <div className="flex min-h-screen flex-col bg-paper">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded focus:bg-terracotta focus:px-4 focus:py-2 focus:font-sans focus:text-parchment"
+      >
+        Skip to content
+      </a>
+      <SiteHeader />
+      <main id="main-content" className="flex-1">
+        {children}
+      </main>
+      <SiteFooter />
     </div>
   );
 }
