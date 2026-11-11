@@ -305,15 +305,7 @@ export const menuItems: MenuItem[] = [
   }
 ];
 
-export function formatPeso(centavos: number): string {
-  const hasCentavos = centavos % 100 !== 0;
-  return new Intl.NumberFormat("en-PH", {
-    style: "currency",
-    currency: "PHP",
-    minimumFractionDigits: hasCentavos ? 2 : 0,
-    maximumFractionDigits: 2
-  }).format(centavos / 100);
-}
+export { formatPeso } from "@ami/shared";
 
 export function getItemBySlug(slug: string): MenuItem | undefined {
   return menuItems.find((item) => item.slug === slug);

@@ -957,10 +957,11 @@ E2E:
   - Files: `apps/api/prisma/seed.ts`  
   - Acceptance: `npm run db:seed` populates categories, items, caps, zones, settings, owner account.
 
-- [ ] T-016 Implement time helpers (Asia/Manila) and money formatting  
+- [x] T-016 Implement time helpers (Asia/Manila) and money formatting  
   - Depends: T-003  
   - Files: `apps/api/src/lib/time.ts`, `apps/web/lib/time.ts`  
   - Acceptance: unit tests for cutoff and booking window pass.
+  - Progress: logic lives in `packages/shared/src/lib/time.ts` and `money.ts`; `apps/api/src/lib/time.ts` re-exports it and the web app imports `@ami/shared` directly. 21 Vitest tests pass (Manila date boundary, open hours, 18:00 cutoff, 14-day booking window, peso formatting).
 
 - [ ] T-017 Phone OTP auth (request + verify) with console/SMS adapter  
   - Depends: T-013, T-005  
@@ -1303,3 +1304,4 @@ All ingredient, allergen, and tag data: `OWNER TO CONFIRM`. Sample placeholders 
 - 2026-11-11: Applied owner answers: Sampler Box consumes the four loaf caps; coffee/ingredient data uses sample placeholders; delivery fees use amount + distance bands; online payment proof is uploaded after order confirmation.
 - 2026-11-11: Phase 1 progress — fixed font theme tokens (display/accent utilities were never generated), added the static catalog (`lib/menu-data.ts`), `/menu` and `/menu/[slug]` pages, Ami-branded public header/footer with live open/closed status, integrated the Dish Orbit Carousel on the home page with optional rating/likes, optimized the hero asset (3.0 MB → 447 KB), and replaced boilerplate auth/dashboard branding. Fixed backend CORS so dev login works from any localhost port.
 - 2026-11-11: Added `/design-tile` (Gate A style tile) and Vitest in `apps/web` with 8 passing catalog/mapping tests. T-011 remains open for RTL, Playwright, and axe.
+- 2026-11-11: Added shared Asia/Manila time + centavo money helpers (`packages/shared/src/lib`), re-exported them from the API, and switched the web app's `formatPeso` and open/closed badge to the shared implementations. Added cutoff and booking-window tests (21 passing). Root `postinstall` now builds `@ami/shared` so a fresh clone works.

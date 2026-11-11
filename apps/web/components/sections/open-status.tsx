@@ -1,44 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const OPEN_HOUR = 7;
-const CLOSE_HOUR = 21;
+import {
+  formatShopHour,
+  getManilaParts,
+  isShopOpen,
+  SHOP_CLOSE_HOUR,
+  SHOP_OPEN_HOUR
+} from "@ami/shared";
 
 type Status = {
   open: boolean;
   text: string;
 };
 
-function manilaNow(): Date {
-  // Convert the current instant to a Date whose local getters read Manila time.
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Manila",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false
-  }).formatToParts(new Date());
+const openLabel = formatShopHour(SHOP_OPEN_HOUR);
+const closeLabel = formatShopHour(SHOP_CLOSE_HOUR);
 
-  const get = (type: string) => Number(parts.find((part) => part.type === type)?.value ?? 0);
-  return new Date(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"));
-}
-
-function computeStatus(): Status {
-  const now = manilaNow();
-  const minutes = now.getHours() * 60 + now.getMinutes();
-  const openAt = OPEN_HOUR * 60;
-  const closeAt = CLOSE_HOUR * 60;
-
-  if (minutes >= openAt && minutes < closeAt) {
-    return { open: true, text: "Open now until 9:00 PM" };
+function computeStatus(now: Date = new Date()): Status {
+  if (isShopOpen(now)) {
+    return { open: true, text: `Open now until ${closeLabel}` };
   }
-  if (minutes < openAt) {
-    return { open: false, text: "Closed — opens today at 7:00 AM" };
-  }
-  return { open: false, text: "Closed — opens tomorrow at 7:00 AM" };
+
+  const { hour } = getManilaParts(now);
+  return hour < SHOP_OPEN_HOUR
+    ? { open: false, text: `Closed — opens today at ${openLabel}` }
+    : { open: false, text: `Closed — opens tomorrow at ${openLabel}` };
 }
 
 export function OpenStatus() {
@@ -53,7 +40,7 @@ export function OpenStatus() {
 
   return (
     <p
-      className="inline-flex min-h-[32px] items-center gap-2 font-[family-name:var(--font-ui-stack)] text-base"
+      className="inline-flex min-h-[32px] items-center gap-2 font-sans text-base"
       aria-live="polite"
     >
       <span
@@ -63,7 +50,7 @@ export function OpenStatus() {
           (status ? (status.open ? "bg-status-ready" : "bg-status-cancelled") : "bg-ochre")
         }
       />
-      <span>{status ? status.text : "Open daily 7:00 AM – 9:00 PM"}</span>
+      <span>{status ? status.text : `Open daily ${openLabel} – ${closeLabel}`}</span>
     </p>
   );
 }
