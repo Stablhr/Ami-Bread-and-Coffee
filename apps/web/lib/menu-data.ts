@@ -306,10 +306,11 @@ export const menuItems: MenuItem[] = [
 ];
 
 export function formatPeso(centavos: number): string {
+  const hasCentavos = centavos % 100 !== 0;
   return new Intl.NumberFormat("en-PH", {
     style: "currency",
     currency: "PHP",
-    minimumFractionDigits: 0,
+    minimumFractionDigits: hasCentavos ? 2 : 0,
     maximumFractionDigits: 2
   }).format(centavos / 100);
 }

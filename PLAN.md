@@ -907,7 +907,7 @@ E2E:
   - Files: `apps/web/tailwind.config.ts`, `apps/web/app/globals.css`  
   - Acceptance: token classes render; contrast documented.
 
-- [ ] T-007 Build vintage style tile page `/design-tile`  
+- [x] T-007 Build vintage style tile page `/design-tile`  
   - Depends: T-006  
   - Files: `apps/web/app/(public)/design-tile/page.tsx`, `components/vintage/*`  
   - Acceptance: page shows palette, typography, badges, menu card, allergen notice, texture.
@@ -932,11 +932,13 @@ E2E:
   - Depends: T-003, T-004  
   - Files: config files in both apps  
   - Acceptance: `npm test` runs with 0 failures on empty suites.
+  - Progress: Vitest configured in `apps/web` with catalog/mapping tests (8 passing). RTL, Playwright, and axe still to add.
 
-- [ ] T-012 Collect owner content into seed spreadsheet (items, prices, ingredients, zones, payment details)  
+- [x] T-012 Collect owner content into seed spreadsheet (items, prices, ingredients, zones, payment details)  
   - Depends: none (owner)  
   - Files: `apps/api/prisma/seed-data/*.json` (data only)  
   - Acceptance: all menu items from section 16 present; unknowns marked `OWNER TO CONFIRM`.
+  - Progress: catalog captured in `apps/web/lib/menu-data.ts`; ingredient/allergen values are sample placeholders pending owner confirmation.
 
 ### Phase 2 — Database, auth, catalog, admin menu
 
@@ -1300,3 +1302,4 @@ All ingredient, allergen, and tag data: `OWNER TO CONFIRM`. Sample placeholders 
 - 2026-11-11: Initial plan created. Includes vintage design direction, Dish Orbit Carousel integration, hero asset `hero-section.png`, accessibility checklist, 55 numbered tasks, and deployment cost estimates.
 - 2026-11-11: Applied owner answers: Sampler Box consumes the four loaf caps; coffee/ingredient data uses sample placeholders; delivery fees use amount + distance bands; online payment proof is uploaded after order confirmation.
 - 2026-11-11: Phase 1 progress — fixed font theme tokens (display/accent utilities were never generated), added the static catalog (`lib/menu-data.ts`), `/menu` and `/menu/[slug]` pages, Ami-branded public header/footer with live open/closed status, integrated the Dish Orbit Carousel on the home page with optional rating/likes, optimized the hero asset (3.0 MB → 447 KB), and replaced boilerplate auth/dashboard branding. Fixed backend CORS so dev login works from any localhost port.
+- 2026-11-11: Added `/design-tile` (Gate A style tile) and Vitest in `apps/web` with 8 passing catalog/mapping tests. T-011 remains open for RTL, Playwright, and axe.
