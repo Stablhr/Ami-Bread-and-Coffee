@@ -1,0 +1,331 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  STAFF
+  OWNER
+}
+
+enum OrderStatus {
+  RECEIVED
+  IN_THE_OVEN
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  AWAITING_CONFIRMATION
+  PAID
+  REFUNDED
+}
+
+enum FulfillmentType {
+  PICKUP
+  DELIVERY
+}
+
+enum PaymentMethod {
+  CASH_ON_PICKUP
+  GCASH
+  MAYA
+  BANK_TRANSFER
+  GATEWAY
+}
+
+enum AuthChallengeType {
+  PHONE_OTP
+  EMAIL_MAGIC
+}
+
+enum NotificationChannel {
+  SMS
+  EMAIL
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  phone        String?   @unique
+  email        String?   @unique
+  name         String
+  role         Role      @default(CUSTOMER)
+  totpSecret   String?
+  backupCodes  String[]  @default([])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  refreshTokens  RefreshToken[]
+  orders         Order[]        @relation("CustomerOrders")
+  reviews        Review[]
+  closures       ShopClosure[]
+  auditLogs      AuditLog[]
+
+  @@index([role])
+}
+
+model RefreshToken {
+  id           String    @id @default(uuid())
+  userId       String
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuthChallenge {
+  id          String            @id @default(uuid())
+  type        AuthChallengeType
+  destination String
+  codeHash    String
+  expiresAt   DateTime
+  attempts    Int               @default(0)
+  consumedAt  DateTime?
+  ipAddress   String?
+  createdAt   DateTime          @default(now())
+
+  @@index([destination, createdAt])
+  @@index([expiresAt])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  name        String
+  description String?
+  sortOrder   Int       @default(0)
+  active      Boolean   @default(true)
+
+  items MenuItem[]
+}
+
+model MenuItem {
+  id               String   @id @default(uuid())
+  categoryId       String
+  slug             String   @unique
+  name             String
+  description      String   @default("")
+  price            Decimal  @db.Decimal(10, 2)
+  imageUrl         String?
+  active           Boolean  @default(true)
+  defaultDailyCap  Int      @default(20)
+  maxPerOrder      Int      @default(5)
+  stockComponents  Json?
+  ingredients      String[] @default([])
+  allergens        String[] @default([])
+  tags             String[] @default([])
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  category     Category       @relation(fields: [categoryId], references: [id])
+  dailyCaps    DailyItemCap[]
+  orderItems   OrderItem[]
+  reviews      Review[]
+
+  @@index([categoryId, active])
+  @@index([active, sortOrder])
+}
+
+model DailyItemCap {
+  id         String   @id @default(uuid())
+  menuItemId String
+  date       DateTime @db.Date
+  cap        Int
+  sold       Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@unique([menuItemId, date])
+  @@index([date])
+}
+
+model DeliveryZone {
+  id        String   @id @default(uuid())
+  name      String
+  areas     String[] @default([])
+  fee       Decimal  @db.Decimal(10, 2)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+}
+
+model ShopClosure {
+  id          String   @id @default(uuid())
+  date        DateTime @unique @db.Date
+  reason      String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  createdBy User? @relation(fields: [createdById], references: [id])
+}
+
+model ShopSettings {
+  id                   Int      @id @default(1)
+  isOpen               Boolean  @default(true)
+  bookingWindowDays    Int      @default(14)
+  cutoffTime           String   @default("18:00")
+  sameDayOrdersEnabled Boolean  @default(false)
+  defaultDailyCap      Int      @default(20)
+  maxQtyPerItem        Int      @default(5)
+  freeDeliveryThreshold Decimal @db.Decimal(10, 2) @default(1000.00)
+  smallOrderSurcharge  Decimal  @db.Decimal(10, 2) @default(30.00)
+  smallOrderThreshold  Decimal  @db.Decimal(10, 2) @default(500.00)
+  cashOnPickupEnabled  Boolean  @default(true)
+  timezone             String   @default("Asia/Manila")
+  smsEnabled           Boolean  @default(true)
+  emailEnabled         Boolean  @default(true)
+  messengerUrl         String?
+  shopPhone            String?
+  updatedAt            DateTime @updatedAt
+}
+
+model Order {
+  id              String          @id @default(uuid())
+  orderNumber     String          @unique
+  customerId      String
+  status          OrderStatus     @default(RECEIVED)
+  paymentStatus   PaymentStatus   @default(UNPAID)
+  fulfillmentType FulfillmentType
+  pickupDate      DateTime        @db.Date
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  deliveryAddress String?
+  deliveryZoneId  String?
+  deliveryFee     Decimal         @db.Decimal(10, 2) @default(0)
+  subtotal        Decimal         @db.Decimal(10, 2)
+  total           Decimal         @db.Decimal(10, 2)
+  notes           String?
+  attentionFlag   Boolean         @default(false)
+  undoUntil       DateTime?
+  lastAuditLogId  String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  cancelledAt     DateTime?
+
+  customer     User          @relation("CustomerOrders", fields: [customerId], references: [id])
+  deliveryZone DeliveryZone? @relation(fields: [deliveryZoneId], references: [id])
+  items        OrderItem[]
+  payment      Payment?
+  reviews      Review[]
+  notifications Notification[]
+
+  @@index([customerId, createdAt])
+  @@index([status, createdAt])
+  @@index([pickupDate])
+  @@index([paymentStatus])
+}
+
+model OrderItem {
+  id           String  @id @default(uuid())
+  orderId      String
+  menuItemId   String
+  nameSnapshot String
+  quantity     Int
+  unitPrice    Decimal @db.Decimal(10, 2)
+  lineTotal    Decimal @db.Decimal(10, 2)
+
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@index([orderId])
+  @@index([menuItemId])
+}
+
+model Payment {
+  id           String        @id @default(uuid())
+  orderId      String        @unique
+  method       PaymentMethod
+  amount       Decimal       @db.Decimal(10, 2)
+  status       PaymentStatus @default(UNPAID)
+  proofUrl     String?
+  providerRef  String?
+  paidAt       DateTime?
+  refundedAt   DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  orderId    String
+  menuItemId String
+  customerId String
+  rating     Int
+  comment    String?
+  hidden     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+  customer User     @relation(fields: [customerId], references: [id])
+
+  @@unique([customerId, orderId, menuItemId])
+  @@index([menuItemId])
+  @@index([customerId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String
+  entityId   String
+  action     String
+  fromValue  String?
+  toValue    String?
+  actorId    String?
+  actorRole  String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@index([actorId])
+}
+
+model Notification {
+  id          String              @id @default(uuid())
+  orderId     String?
+  channel     NotificationChannel
+  type        String
+  recipient   String
+  status      NotificationStatus  @default(QUEUED)
+  provider    String
+  providerRef String?
+  error       String?
+  sentAt      DateTime?
+  createdAt   DateTime            @default(now())
+
+  order Order? @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+  @@index([status, createdAt])
+}

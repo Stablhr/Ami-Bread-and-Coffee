@@ -1,0 +1,101 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-paper: var(--paper);
+  --color-parchment: var(--parchment);
+  --color-terracotta: var(--terracotta);
+  --color-espresso: var(--espresso);
+  --color-dusty-red: var(--dusty-red);
+  --color-ochre: var(--ochre);
+  --color-status-received: var(--status-received);
+  --color-status-oven: var(--status-oven);
+  --color-status-ready: var(--status-ready);
+  --color-status-completed: var(--status-completed);
+  --color-status-cancelled: var(--status-cancelled);
+  --font-sans: var(--font-ui);
+  --font-serif: var(--font-body);
+  --font-display: var(--font-display);
+  --font-accent: var(--font-accent);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #F3E9D8;
+  --foreground: #2B1A10;
+  --card: #FBF5E9;
+  --card-foreground: #2B1A10;
+  --popover: #FBF5E9;
+  --popover-foreground: #2B1A10;
+  --primary: #7A3B14;
+  --primary-foreground: #FBF5E9;
+  --secondary: #FBF5E9;
+  --secondary-foreground: #2B1A10;
+  --muted: #F3E9D8;
+  --muted-foreground: #7A3B14;
+  --accent: #B8862B;
+  --accent-foreground: #2B1A10;
+  --destructive: #A23B2A;
+  --border: #7A3B14;
+  --input: #FBF5E9;
+  --ring: #7A3B14;
+  --radius: 0.625rem;
+  --paper: #F3E9D8;
+  --parchment: #FBF5E9;
+  --terracotta: #7A3B14;
+  --espresso: #2B1A10;
+  --dusty-red: #A23B2A;
+  --ochre: #B8862B;
+  --status-received: #1D4ED8;
+  --status-oven: #B45309;
+  --status-ready: #15803D;
+  --status-completed: #4B5563;
+  --status-cancelled: #B91C1C;
+  --font-display: "DM Serif Display", serif;
+  --font-body: "Lora", serif;
+  --font-ui: "Nunito Sans", sans-serif;
+  --font-accent: "Caveat", cursive;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-size: 18px;
+  }
+  body {
+    @apply bg-paper text-espresso font-[family-name:var(--font-body)];
+    min-height: 100vh;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+}
