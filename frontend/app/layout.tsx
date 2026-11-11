@@ -24,11 +24,8 @@ export const metadata: Metadata = {
   title: 'App name',
   description: 'App name description',
   icons: {
-    icon: [
-      {url: '/assets/logo.png', type: 'image/png', sizes: '32x32'},
-      {url: '/assets/logo.png', type: 'image/png', sizes: '192x192'}
-    ],
-    apple: '/assets/logo.png'
+    icon: '/next.svg',
+    apple: '/next.svg'
   },
   openGraph: {
     title: 'App name',
