@@ -22,41 +22,65 @@ export default function HomePage() {
 
   return (
     <main>
-      <section className="relative overflow-hidden border-b-2 border-double border-terracotta bg-paper">
-        <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 md:grid-cols-2 md:items-center md:px-8">
-          <div>
-            <p className="font-accent text-3xl text-terracotta">Ami Bread &amp; Coffee</p>
-            <h1 className="mt-2 font-display text-4xl leading-tight md:text-6xl">
-              Freshly baked sourdough, ready when you are.
+      <section className="relative isolate overflow-hidden border-b-2 border-double border-terracotta">
+        <Image
+          src="/hero-section.png"
+          alt=""
+          aria-hidden="true"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+
+        {/* Warm scrims keep the parchment text readable over the photo. */}
+        <div aria-hidden="true" className="absolute inset-0 bg-espresso/50" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-r from-espresso/90 via-espresso/60 to-espresso/15"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-espresso/70 via-transparent to-espresso/25"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-2 rounded-sm border border-parchment/25 md:inset-4"
+        />
+
+        <div className="relative mx-auto flex min-h-[520px] max-w-6xl flex-col justify-center px-5 py-16 md:min-h-[640px] md:px-8">
+          <div className="max-w-2xl">
+            <p className="font-accent text-3xl text-parchment/90">Ami Bread &amp; Coffee</p>
+            <h1 className="mt-2 font-display text-4xl leading-[1.05] text-parchment md:text-6xl">
+              Freshly baked sourdough,
+              <br className="hidden sm:block" /> ready when you are.
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-espresso">
+            <p className="mt-5 max-w-xl text-lg text-parchment/90">
               Pre-order bread, scones, toast, focaccia, and coffee for pickup or
               delivery in Trece Martires City. Order by 6:00 PM the day before.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href="/menu"
-                className="min-h-[48px] rounded-md bg-terracotta px-6 py-3 font-sans text-lg font-semibold text-parchment hover:bg-espresso"
+                className="min-h-[48px] rounded-md border-2 border-parchment bg-parchment px-6 py-3 font-sans text-lg font-semibold text-terracotta hover:bg-ochre hover:border-ochre"
               >
                 View the menu
               </Link>
               <Link
                 href="/sign-in"
-                className="min-h-[48px] rounded-md border-2 border-terracotta px-6 py-3 font-sans text-lg font-semibold text-terracotta hover:bg-parchment"
+                className="min-h-[48px] rounded-md border-2 border-parchment/80 px-6 py-3 font-sans text-lg font-semibold text-parchment hover:bg-parchment/15"
               >
                 Sign in to order
               </Link>
             </div>
           </div>
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border-2 border-terracotta bg-parchment">
-            <Image
-              src="/hero-section.png"
-              alt="A loaf of sourdough bread beside a cup of coffee on a wooden table"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
-              priority
-            />
+
+          <div className="mt-10 inline-flex max-w-md flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-parchment/35 bg-espresso/60 px-4 py-3 font-sans text-base text-parchment backdrop-blur-sm">
+            <span>Open daily 7:00 AM – 9:00 PM</span>
+            <span aria-hidden="true" className="hidden text-parchment/50 sm:inline">
+              ·
+            </span>
+            <span>Order by 6:00 PM the day before</span>
           </div>
         </div>
       </section>
