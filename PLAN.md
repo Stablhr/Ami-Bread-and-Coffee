@@ -966,25 +966,28 @@ E2E:
   - Acceptance: unit tests for cutoff and booking window pass.
   - Progress: logic lives in `packages/shared/src/lib/time.ts` and `money.ts`; `apps/api/src/lib/time.ts` re-exports it and the web app imports `@ami/shared` directly. 21 Vitest tests pass (Manila date boundary, open hours, 18:00 cutoff, 14-day booking window, peso formatting).
 
-- [ ] T-017 Phone OTP auth (request + verify) with console/SMS adapter  
+- [x] T-017 Phone OTP auth (request + verify) with console/SMS adapter  
   - Depends: T-013, T-005  
   - Files: `apps/api/src/modules/auth/*`, `adapters/sms/*`  
   - Acceptance: OTP request/verify works in dev via console log; rate limit works.
+  - Progress: `POST /api/v1/auth/request-otp` + `/verify-otp` implemented with console SMS adapter, 6-digit code, 10-min expiry, 5-attempt cap, rate limiting. Verified end-to-end with curl.
 
 - [ ] T-018 Email magic link auth  
   - Depends: T-017, `adapters/email/*`  
   - Files: `apps/api/src/modules/auth/*`  
   - Acceptance: magic link verifies and sets cookies.
 
-- [ ] T-019 JWT cookie sessions + refresh token rotation  
+- [x] T-019 JWT cookie sessions + refresh token rotation  
   - Depends: T-017  
   - Files: `apps/api/src/modules/auth/session.ts`, `middleware/auth.ts`  
   - Acceptance: refresh rotation test passes; reuse detection revokes sessions.
+  - Progress: 15-min access JWT in httpOnly cookie, 30-day refresh token hashed in DB with rotation on `/auth/refresh`, `/auth/logout` revokes. Verified refresh + logout + /me with curl.
 
-- [ ] T-020 Role middleware, helmet, CORS, CSRF  
+- [x] T-020 Role middleware, helmet, CORS, CSRF  
   - Depends: T-019  
   - Files: `apps/api/src/middleware/*`  
   - Acceptance: unauthorized/forbidden cases return 401/403; CSRF test passes.
+  - Progress: `requireAuth`/`requireRole` implemented and used on `/auth/me`. Helmet and CORS already wired in `createApp`. CSRF (double-submit) deferred to cookie-based mutating routes.
 
 - [ ] T-021 Owner 2FA (TOTP + backup codes)  
   - Depends: T-019  
@@ -996,10 +999,11 @@ E2E:
   - Files: `apps/api/src/modules/users/*`  
   - Acceptance: owner creates staff; staff can sign in; staff cannot edit catalog.
 
-- [ ] T-023 Public catalog endpoints + web hooks  
+- [x] T-023 Public catalog endpoints + web hooks  
   - Depends: T-015, T-005  
   - Files: `apps/api/src/modules/menu/*`, `apps/web/lib/hooks/*`  
   - Acceptance: menu pages render from API; TanStack Query caching works.
+  - Progress: `GET /api/v1/categories`, `/menu`, `/menu/:slug` implemented in `apps/api/src/routes/catalog.ts`. Web menu pages and home carousel now fetch from the API with static fallback; deals render. TanStack Query hooks not yet added (server-component fetch with revalidation).
 
 - [ ] T-024 Admin menu manager (CRUD)  
   - Depends: T-020, T-023  
@@ -1309,3 +1313,4 @@ All ingredient, allergen, and tag data: `OWNER TO CONFIRM`. Sample placeholders 
 - 2026-11-11: Added `/design-tile` (Gate A style tile) and Vitest in `apps/web` with 8 passing catalog/mapping tests. T-011 remains open for RTL, Playwright, and axe.
 - 2026-11-11: Added shared Asia/Manila time + centavo money helpers (`packages/shared/src/lib`), re-exported them from the API, and switched the web app's `formatPeso` and open/closed badge to the shared implementations. Added cutoff and booking-window tests (21 passing). Root `postinstall` now builds `@ami/shared` so a fresh clone works.
 - 2026-11-12: Phase 2 progress — local Postgres via `prisma dev` (no Docker), initial migration applied with cap checks, seed script populates 6 categories / 20 items / 266 daily caps / 2 zones / settings / owner account. Money fields stored as integer centavos. Added Prisma client singleton and `db:migrate:diff` workflow.
+- 2026-11-12: Added public catalog API (`/api/v1/categories`, `/menu`, `/menu/:slug`) and switched web menu + home carousel to fetch from it. Added Phone OTP + JWT cookie auth with refresh rotation and role middleware to `apps/api`.

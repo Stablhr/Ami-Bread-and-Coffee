@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { catalogRouter } from "./routes/catalog.js";
+import { authRouter } from "./routes/auth.js";
 
 export function createApp() {
   const app = express();
@@ -16,6 +17,7 @@ export function createApp() {
   });
 
   app.use("/api/v1", catalogRouter);
+  app.use("/api/v1", authRouter);
 
   return app;
 }
