@@ -17,6 +17,8 @@ type SeedItem = {
   ingredients: string[];
   allergens: string[];
   tags: string[];
+  dealQuantity?: number;
+  dealPrice?: number;
   defaultDailyCap: number;
   maxPerOrder: number;
   sortOrder: number;
@@ -68,6 +70,8 @@ async function seedItems(categoryIds: Map<string, string>) {
       description: item.description,
       price: item.price,
       weightLabel: item.weightLabel ?? null,
+      dealQuantity: item.dealQuantity ?? null,
+      dealPrice: item.dealPrice ?? null,
       ingredients: item.ingredients,
       allergens: item.allergens,
       tags: item.tags,

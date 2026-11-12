@@ -150,7 +150,9 @@
       "tags": ["Bestseller"],
       "defaultDailyCap": 20,
       "maxPerOrder": 5,
-      "sortOrder": 7
+      "sortOrder": 7,
+      "dealQuantity": 3,
+      "dealPrice": 22000
     },
     {
       "slug": "apple-cinnamon-scone",
@@ -163,7 +165,9 @@
       "tags": [],
       "defaultDailyCap": 20,
       "maxPerOrder": 5,
-      "sortOrder": 8
+      "sortOrder": 8,
+      "dealQuantity": 3,
+      "dealPrice": 22000
     },
     {
       "slug": "vanilla-almond-scone",
@@ -176,7 +180,9 @@
       "tags": [],
       "defaultDailyCap": 20,
       "maxPerOrder": 5,
-      "sortOrder": 9
+      "sortOrder": 9,
+      "dealQuantity": 3,
+      "dealPrice": 22000
     },
     {
       "slug": "triple-cheese-toast",

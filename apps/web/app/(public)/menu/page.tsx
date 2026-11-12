@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { MenuCard } from "@/components/menu/menu-card";
 import { getItemsByCategory, menuCategories } from "@/lib/menu-data";
+import { apiItemToMenuItem, fetchCategories, fetchMenu } from "@/lib/api/catalogApi";
 
 export const metadata: Metadata = {
   title: "Menu — Ami Bread & Coffee",
@@ -8,7 +9,34 @@ export const metadata: Metadata = {
     "Sourdough breads, scones, toast, focaccia, and coffee. Prices in Philippine pesos; order by 6:00 PM the day before."
 };
 
-export default function MenuPage() {
+export const dynamic = "force-dynamic";
+
+export default async function MenuPage() {
+  let categories = menuCategories.map((category) => ({
+    slug: category.slug,
+    name: category.name,
+    description: category.description
+  }));
+  let itemsByCategory = new Map<string, ReturnType<typeof getItemsByCategory>>();
+
+  try {
+    const [apiCategories, apiItems] = await Promise.all([fetchCategories(), fetchMenu()]);
+    categories = apiCategories.map((category) => ({
+      slug: category.slug,
+      name: category.name,
+      description: category.description ?? ""
+    }));
+    const mapped = apiItems.map(apiItemToMenuItem);
+    itemsByCategory = new Map();
+    for (const category of categories) {
+      itemsByCategory.set(category.slug, mapped.filter((item) => item.category === category.slug));
+    }
+  } catch {
+    for (const category of categories) {
+      itemsByCategory.set(category.slug, getItemsByCategory(category.slug));
+    }
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
       <header className="max-w-2xl">
@@ -21,7 +49,7 @@ export default function MenuPage() {
       </header>
 
       <nav aria-label="Menu categories" className="mt-6 flex flex-wrap gap-2 font-sans">
-        {menuCategories.map((category) => (
+        {categories.map((category) => (
           <a
             key={category.slug}
             href={`#${category.slug}`}
@@ -42,8 +70,8 @@ export default function MenuPage() {
       </aside>
 
       <div className="mt-10 space-y-12">
-        {menuCategories.map((category) => {
-          const items = getItemsByCategory(category.slug);
+        {categories.map((category) => {
+          const items = itemsByCategory.get(category.slug) ?? [];
           if (items.length === 0) return null;
           return (
             <section key={category.slug} id={category.slug} aria-labelledby={`${category.slug}-heading`}>

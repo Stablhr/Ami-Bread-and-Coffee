@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+import { catalogRouter } from "./routes/catalog.js";
 
 export function createApp() {
   const app = express();
@@ -13,6 +14,8 @@ export function createApp() {
   app.get("/api/v1/health", (_req, res) => {
     res.json({ status: "ok", time: new Date().toISOString() });
   });
+
+  app.use("/api/v1", catalogRouter);
 
   return app;
 }

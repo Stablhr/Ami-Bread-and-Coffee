@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FeaturedDishes } from "@/components/sections/featured-dishes";
 import { featuredItems, getItemBySlug } from "@/lib/menu-data";
+import { apiItemToMenuItem, fetchMenuItem } from "@/lib/api/catalogApi";
 import { toDishes } from "@/lib/menu-to-dish";
 
 const HOME_FEATURED_SLUGS = [
@@ -14,10 +15,18 @@ const HOME_FEATURED_SLUGS = [
 const messengerUrl =
   process.env.NEXT_PUBLIC_SHOP_MESSENGER_URL ?? "https://m.me/ami-bread-and-coffee";
 
-export default function HomePage() {
-  const homeItems = HOME_FEATURED_SLUGS.map((slug) => getItemBySlug(slug)).filter(
-    (item): item is NonNullable<typeof item> => Boolean(item)
-  );
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const homeItems = (
+    await Promise.all(
+      HOME_FEATURED_SLUGS.map(async (slug) => {
+        const apiItem = await fetchMenuItem(slug);
+        if (apiItem) return apiItemToMenuItem(apiItem);
+        return getItemBySlug(slug);
+      })
+    )
+  ).filter((item): item is NonNullable<typeof item> => Boolean(item));
   const dishes = toDishes(homeItems.length > 0 ? homeItems : featuredItems.slice(0, 4));
 
   return (

@@ -135,6 +135,8 @@ model MenuItem {
   ingredients      String[] @default([])
   allergens        String[] @default([])
   tags             String[] @default([])
+  dealQuantity     Int?
+  dealPrice        Int? // centavos
   sortOrder        Int      @default(0)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

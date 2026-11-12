@@ -1,29 +1,32 @@
 import type { Metadata } from "next";
+import { formatPeso } from "@ami/shared";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatPeso, getItemBySlug, menuItems } from "@/lib/menu-data";
+import { getItemBySlug } from "@/lib/menu-data";
+import { apiItemToMenuItem, fetchMenuItem } from "@/lib/api/catalogApi";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return menuItems.map((item) => ({ slug: item.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = getItemBySlug(slug);
-  if (!item) return { title: "Item not found — Ami Bread & Coffee" };
+  const item = await fetchMenuItem(slug);
+  const fallback = getItemBySlug(slug);
+  const resolved = item ? apiItemToMenuItem(item) : fallback;
+  if (!resolved) return { title: "Item not found — Ami Bread & Coffee" };
   return {
-    title: `${item.name} — Ami Bread & Coffee`,
-    description: item.description
+    title: `${resolved.name} — Ami Bread & Coffee`,
+    description: resolved.description
   };
 }
 
 export default async function MenuItemPage({ params }: PageProps) {
   const { slug } = await params;
-  const item = getItemBySlug(slug);
+  const apiItem = await fetchMenuItem(slug);
+  const item = apiItem ? apiItemToMenuItem(apiItem) : getItemBySlug(slug);
   if (!item) notFound();
 
   return (
