@@ -12,10 +12,10 @@ No account is required to browse. Sign-in is requested only at **Place order**. 
 
 ### 1.2 Primary users
 
-- **Guest** — browse menu, item detail, ingredients, allergens, reviews.
-- **Customer** — date picker, cart, express checkout, tracking, history, reorder, cancel before baking, review after completion.
-- **Cashier (STAFF)** — live order feed and status buttons only.
-- **Owner (OWNER)** — full control: items, prices, caps, closures, zones, payment details, staff, open/closed switch, day summary, bake list.
+- **Guest** - browse menu, item detail, ingredients, allergens, reviews. **Cannot place online orders**; walk-in orders are created by staff at the counter.
+- **Customer (registered)** - must sign in (phone OTP or email magic link) before ordering. Can browse, check availability/sold-out status, build a cart, pre-order with a future pickup/delivery date, check out, track order status (being prepared / prepared / on the way / delivered), view history, reorder, cancel before baking, and review after completion.
+- **Cashier (STAFF)** - live order feed; can mark orders as prepared/done; create walk-in orders for guests.
+- **Owner (OWNER)** - full control: items, prices, caps, closures, zones, payment details, staff, open/closed switch, day summary, bake list. Acts as admin.
 
 ### 1.3 Measurable goals
 
@@ -51,6 +51,7 @@ No account is required to browse. Sign-in is requested only at **Place order**. 
 - [ASSUMPTION] A-5: Coffee and drink items are modeled exactly like other menu items; prices are supplied by the owner before seed data is finalized.
 - [ASSUMPTION] A-6: Same-day ordering stays **off in v1**. The owner toggle exists but is disabled because cutoff semantics for same-day orders are not defined in v1. Enabling same-day orders is a v1.1 change.
 - [ASSUMPTION] A-7: Reviews are per menu item within a completed order; one review per customer per item per order.
+- [ASSUMPTION] A-8: Only registered customers (phone OTP or email magic link) can place online orders. Guests can browse the menu and item details but cannot check out; walk-in orders are created by staff at the counter. Registration is required before adding to cart.
 - [ASSUMPTION] A-8: Delivery fee is per zone per order, not per item.
 - [ASSUMPTION] A-9: Data retention: keep order and payment-proof data for 24 months, then anonymize customer PII and retain aggregated sales. Owner confirms.
 - [ASSUMPTION] A-10: Fonts are self-hosted via `next/font` using the suggested pairings; exact font files are chosen during Phase 1 and recorded in the changelog.
@@ -349,7 +350,7 @@ Web scripts: `dev`, `build`, `start`, `lint`, `typecheck`, `test`, `test:e2e`.
 **Order**
 - `id` UUID PK, `orderNumber` String unique (e.g. `AMB-20261111-001`)
 - `customerId` FK User
-- `status` Enum `RECEIVED | IN_THE_OVEN | READY | COMPLETED | CANCELLED`
+- `status` Enum `RECEIVED | IN_THE_OVEN | READY | OUT_FOR_DELIVERY | COMPLETED | CANCELLED`
 - `paymentStatus` Enum `UNPAID | AWAITING_CONFIRMATION | PAID | REFUNDED`
 - `fulfillmentType` Enum `PICKUP | DELIVERY`
 - `pickupDate` Date
@@ -405,7 +406,7 @@ generator client { provider = "prisma-client-js" }
 datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
 
 enum Role { CUSTOMER STAFF OWNER }
-enum OrderStatus { RECEIVED IN_THE_OVEN READY COMPLETED CANCELLED }
+enum OrderStatus { RECEIVED IN_THE_OVEN READY OUT_FOR_DELIVERY COMPLETED CANCELLED }
 enum PaymentStatus { UNPAID AWAITING_CONFIRMATION PAID REFUNDED }
 enum FulfillmentType { PICKUP DELIVERY }
 enum PaymentMethod { CASH_ON_PICKUP GCASH MAYA BANK_TRANSFER GATEWAY }
@@ -563,7 +564,7 @@ Endpoint `POST /orders`:
 
 ### 6.5 Order state machine
 
-States: `RECEIVED`, `IN_THE_OVEN`, `READY` (display "Ready for Pickup" or "Out for Delivery"), `COMPLETED`, `CANCELLED`.
+States: `RECEIVED` (order placed), `IN_THE_OVEN` (being prepared), `READY` (prepared — "Ready for Pickup" or "Out for Delivery"), `OUT_FOR_DELIVERY` (on the way, delivery only), `COMPLETED` (delivered/picked up), `CANCELLED`. Customer-facing tracker shows four steps: being prepared → prepared → on the way → delivered.
 
 Allowed transitions:
 
@@ -572,7 +573,9 @@ Allowed transitions:
 | RECEIVED | IN_THE_OVEN | Staff/Owner |
 | RECEIVED | CANCELLED | Customer (own) / Owner |
 | IN_THE_OVEN | READY | Staff/Owner |
-| READY | COMPLETED | Staff/Owner |
+| READY | OUT_FOR_DELIVERY | Staff/Owner (delivery orders) |
+| OUT_FOR_DELIVERY | COMPLETED | Staff/Owner |
+| READY | COMPLETED | Staff/Owner (pickup orders) |
 | READY | (no cancel) | — |
 
 - Invalid transitions return 409 `INVALID_TRANSITION`.
@@ -602,7 +605,7 @@ Allowed transitions:
 | Route | Group | Purpose |
 |-------|-------|---------|
 | `/` | public | Home: hero, open/closed banner, featured dish orbit gallery, how to order, reviews, message shop |
-| `/menu` | public | Menu by category; prices; allergen tags |
+| `/menu` | public | Menu by category; prices; allergen tags; sold-out and unavailable items shown (disabled) |
 | `/menu/[slug]` | public | Item detail: photo, price, ingredients, allergens, reviews, add to cart |
 | `/reviews` | public | Public reviews |
 | `/sign-in` | auth | Phone OTP or email magic link; privacy notice |
@@ -1313,4 +1316,4 @@ All ingredient, allergen, and tag data: `OWNER TO CONFIRM`. Sample placeholders 
 - 2026-11-11: Added `/design-tile` (Gate A style tile) and Vitest in `apps/web` with 8 passing catalog/mapping tests. T-011 remains open for RTL, Playwright, and axe.
 - 2026-11-11: Added shared Asia/Manila time + centavo money helpers (`packages/shared/src/lib`), re-exported them from the API, and switched the web app's `formatPeso` and open/closed badge to the shared implementations. Added cutoff and booking-window tests (21 passing). Root `postinstall` now builds `@ami/shared` so a fresh clone works.
 - 2026-11-12: Phase 2 progress — local Postgres via `prisma dev` (no Docker), initial migration applied with cap checks, seed script populates 6 categories / 20 items / 266 daily caps / 2 zones / settings / owner account. Money fields stored as integer centavos. Added Prisma client singleton and `db:migrate:diff` workflow.
-- 2026-11-12: Added public catalog API (`/api/v1/categories`, `/menu`, `/menu/:slug`) and switched web menu + home carousel to fetch from it. Added Phone OTP + JWT cookie auth with refresh rotation and role middleware to `apps/api`.
+- 2026-11-12: Added Phone OTP auth, JWT cookie sessions with refresh rotation, and role middleware to `apps/api`. Clarified roles/ordering flow in PLAN: guests browse + walk-in only, registered customers order online with 4-step tracking (being prepared → prepared → on the way → delivered), added `OUT_FOR_DELIVERY` status.
