@@ -13,6 +13,7 @@
     "test": "npm run test --workspaces --if-present",
     "test:e2e": "npm run test:e2e -w apps/web",
     "db:migrate": "npm run prisma:migrate -w apps/api",
+    "db:migrate:diff": "npm run prisma:migrate:diff -w apps/api",
     "db:deploy": "npm run prisma:deploy -w apps/api",
     "db:seed": "npm run db:seed -w apps/api"
   }

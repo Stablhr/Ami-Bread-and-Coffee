@@ -1,0 +1,359 @@
+{
+  "_meta": {
+    "source": "PLAN.md section 16.1",
+    "note": "Ingredient and allergen lists are SAMPLE PLACEHOLDERS. They must be replaced with owner-confirmed data before launch.",
+    "ownerToConfirm": [
+      "ingredients",
+      "allergens",
+      "drinkPrices",
+      "deliveryZones",
+      "shopPhone",
+      "ownerAccount"
+    ]
+  },
+  "categories": [
+    {
+      "slug": "sourdough-breads",
+      "name": "Sourdough Breads",
+      "description": "Naturally leavened loaves, baked fresh the morning of your pickup.",
+      "sortOrder": 1
+    },
+    {
+      "slug": "sampler-box",
+      "name": "Sampler Box",
+      "description": "Four half-loaves, one of each flavor, for the indecisive table.",
+      "sortOrder": 2
+    },
+    {
+      "slug": "scones",
+      "name": "Sourdough Scones",
+      "description": "Crumbly, buttery, and best warmed for a minute.",
+      "sortOrder": 3
+    },
+    {
+      "slug": "toast",
+      "name": "Sourdough Toast",
+      "description": "Thick slices built for a proper merienda.",
+      "sortOrder": 4
+    },
+    {
+      "slug": "focaccia",
+      "name": "Sourdough Focaccia",
+      "description": "Dimpled, olive-oiled, and cut into generous squares.",
+      "sortOrder": 5
+    },
+    {
+      "slug": "coffee-drinks",
+      "name": "Coffee & Drinks",
+      "description": "Poured to go with whatever comes out of the oven.",
+      "sortOrder": 6
+    }
+  ],
+  "items": [
+    {
+      "slug": "plain-sourdough",
+      "name": "Plain Sourdough",
+      "categorySlug": "sourdough-breads",
+      "price": 20000,
+      "weightLabel": "~800 g",
+      "description": "Our everyday loaf: a crackling crust, an open crumb, and a gentle tang. Good for toast, sandwiches, or tearing into while it is still warm.",
+      "ingredients": ["Wheat flour", "Water", "Sourdough starter", "Sea salt"],
+      "allergens": ["Gluten"],
+      "tags": ["Bestseller", "Vegan"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 1
+    },
+    {
+      "slug": "multigrain-sourdough",
+      "name": "Multigrain Sourdough",
+      "categorySlug": "sourdough-breads",
+      "price": 25000,
+      "weightLabel": "~800 g",
+      "description": "A seeded loaf with oats, flax, and sunflower. Nutty, hearty, and happy under a layer of butter.",
+      "ingredients": ["Wheat flour", "Water", "Sourdough starter", "Sea salt", "Oats", "Flaxseed", "Sunflower seeds"],
+      "allergens": ["Gluten"],
+      "tags": ["Seeded", "Vegan"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 2
+    },
+    {
+      "slug": "dried-fruits-nuts-sourdough",
+      "name": "Dried Fruits & Nuts Sourdough",
+      "categorySlug": "sourdough-breads",
+      "price": 30000,
+      "weightLabel": "~800 g",
+      "description": "Raisins, cranberries, walnuts, and a whisper of cinnamon folded through a soft sourdough crumb.",
+      "ingredients": ["Wheat flour", "Water", "Sourdough starter", "Sea salt", "Raisins", "Cranberries", "Walnuts", "Cinnamon"],
+      "allergens": ["Gluten", "Tree nuts"],
+      "tags": ["Sweet", "Vegan"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 3
+    },
+    {
+      "slug": "blueberry-sourdough",
+      "name": "Blueberry Sourdough",
+      "categorySlug": "sourdough-breads",
+      "price": 30000,
+      "weightLabel": "~800 g",
+      "description": "Bursts of blueberry in a lightly sweet loaf. Lovely toasted with cream cheese.",
+      "ingredients": ["Wheat flour", "Water", "Sourdough starter", "Sea salt", "Blueberries", "Sugar"],
+      "allergens": ["Gluten"],
+      "tags": ["Sweet"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 4
+    },
+    {
+      "slug": "espresso-sourdough",
+      "name": "Espresso Sourdough",
+      "categorySlug": "sourdough-breads",
+      "price": 30000,
+      "weightLabel": "~800 g",
+      "description": "A dark, malty loaf with a shot of espresso in the dough. Pairs well with the morning brew it borrowed from.",
+      "ingredients": ["Wheat flour", "Water", "Sourdough starter", "Sea salt", "Espresso", "Cocoa"],
+      "allergens": ["Gluten"],
+      "tags": ["Coffee"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 5
+    },
+    {
+      "slug": "sampler-box",
+      "name": "Sampler Box",
+      "categorySlug": "sampler-box",
+      "price": 70000,
+      "description": "Four half-loaves — Dried Fruits & Nuts, Multigrain, Plain, and Blueberry — boxed up so everyone at the table gets a favorite.",
+      "ingredients": ["Wheat flour", "Water", "Sourdough starter", "Sea salt", "Oats", "Flaxseed", "Sunflower seeds", "Raisins", "Cranberries", "Walnuts", "Blueberries"],
+      "allergens": ["Gluten", "Tree nuts"],
+      "tags": ["Bundle", "Four flavors"],
+      "defaultDailyCap": 0,
+      "maxPerOrder": 5,
+      "sortOrder": 6,
+      "stockComponents": [
+        { "slug": "dried-fruits-nuts-sourdough", "quantity": 1 },
+        { "slug": "multigrain-sourdough", "quantity": 1 },
+        { "slug": "plain-sourdough", "quantity": 1 },
+        { "slug": "blueberry-sourdough", "quantity": 1 }
+      ]
+    },
+    {
+      "slug": "chocochip-scone",
+      "name": "Chocochip Scone",
+      "categorySlug": "scones",
+      "price": 8000,
+      "description": "A tender sourdough scone studded with chocolate chips. Warm it for twenty seconds and thank us later.",
+      "ingredients": ["Wheat flour", "Butter", "Sugar", "Sourdough starter", "Chocolate chips", "Cream", "Sea salt"],
+      "allergens": ["Gluten", "Dairy"],
+      "tags": ["Bestseller"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 7
+    },
+    {
+      "slug": "apple-cinnamon-scone",
+      "name": "Apple Cinnamon Scone",
+      "categorySlug": "scones",
+      "price": 8000,
+      "description": "Soft apple pieces and cinnamon sugar in every bite. Tastes like the first cool morning of the year.",
+      "ingredients": ["Wheat flour", "Butter", "Sugar", "Sourdough starter", "Apple", "Cinnamon", "Cream", "Sea salt"],
+      "allergens": ["Gluten", "Dairy"],
+      "tags": [],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 8
+    },
+    {
+      "slug": "vanilla-almond-scone",
+      "name": "Vanilla Almond Scone",
+      "categorySlug": "scones",
+      "price": 8000,
+      "description": "Toasted almonds and vanilla in a scone that is just sweet enough.",
+      "ingredients": ["Wheat flour", "Butter", "Sugar", "Sourdough starter", "Almonds", "Vanilla", "Cream", "Sea salt"],
+      "allergens": ["Gluten", "Dairy", "Tree nuts"],
+      "tags": [],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 9
+    },
+    {
+      "slug": "triple-cheese-toast",
+      "name": "Triple Cheese Toast",
+      "categorySlug": "toast",
+      "price": 12000,
+      "description": "Three cheeses melted over a thick slice of sourdough until the edges go crisp.",
+      "ingredients": ["Sourdough bread", "Cheddar", "Mozzarella", "Parmesan", "Butter"],
+      "allergens": ["Gluten", "Dairy"],
+      "tags": ["Vegetarian", "Bestseller"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 10
+    },
+    {
+      "slug": "pizza-toast",
+      "name": "Pizza Toast",
+      "categorySlug": "toast",
+      "price": 12000,
+      "description": "Tomato, cheese, and herbs on sourdough — the after-school snack, all grown up.",
+      "ingredients": ["Sourdough bread", "Tomato sauce", "Mozzarella", "Oregano", "Olive oil"],
+      "allergens": ["Gluten", "Dairy"],
+      "tags": ["Vegetarian"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 11
+    },
+    {
+      "slug": "pepper-jack-jalapeno-focaccia",
+      "name": "Pepper Jack Jalapeño Focaccia",
+      "categorySlug": "focaccia",
+      "price": 15000,
+      "description": "Pepper jack and sliced jalapeño over a pillowy focaccia base. A little heat, a lot of cheese.",
+      "ingredients": ["Wheat flour", "Olive oil", "Water", "Sourdough starter", "Sea salt", "Pepper jack", "Jalapeño"],
+      "allergens": ["Gluten", "Dairy"],
+      "tags": ["Spicy", "Vegetarian"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 12
+    },
+    {
+      "slug": "brown-sugar-cinnamon-focaccia",
+      "name": "Toasted Brown Sugar Cinnamon Focaccia",
+      "categorySlug": "focaccia",
+      "price": 15000,
+      "description": "Brown sugar and cinnamon toasted onto olive-oiled focaccia. Dessert, or breakfast, depending on your day.",
+      "ingredients": ["Wheat flour", "Olive oil", "Water", "Sourdough starter", "Sea salt", "Brown sugar", "Cinnamon"],
+      "allergens": ["Gluten"],
+      "tags": ["Sweet", "Vegan"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 13
+    },
+    {
+      "slug": "pesto-focaccia",
+      "name": "Pesto Focaccia",
+      "categorySlug": "focaccia",
+      "price": 15000,
+      "description": "Basil pesto swirled into the dimples, with a final shower of parmesan.",
+      "ingredients": ["Wheat flour", "Olive oil", "Water", "Sourdough starter", "Sea salt", "Basil", "Pine nuts", "Parmesan"],
+      "allergens": ["Gluten", "Dairy", "Tree nuts"],
+      "tags": ["Vegetarian"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 14
+    },
+    {
+      "slug": "americano",
+      "name": "Americano",
+      "categorySlug": "coffee-drinks",
+      "price": 12000,
+      "description": "Espresso and hot water. Simple, dark, and honest.",
+      "ingredients": ["Coffee", "Water"],
+      "allergens": [],
+      "tags": ["Vegan"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 15
+    },
+    {
+      "slug": "latte",
+      "name": "Latte",
+      "categorySlug": "coffee-drinks",
+      "price": 15000,
+      "description": "A double shot softened with steamed milk.",
+      "ingredients": ["Coffee", "Milk"],
+      "allergens": ["Dairy"],
+      "tags": ["Vegetarian"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 16
+    },
+    {
+      "slug": "cappuccino",
+      "name": "Cappuccino",
+      "categorySlug": "coffee-drinks",
+      "price": 15000,
+      "description": "Equal parts espresso, steamed milk, and foam.",
+      "ingredients": ["Coffee", "Milk"],
+      "allergens": ["Dairy"],
+      "tags": ["Vegetarian"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 17
+    },
+    {
+      "slug": "iced-coffee",
+      "name": "Iced Coffee",
+      "categorySlug": "coffee-drinks",
+      "price": 14000,
+      "description": "Cold, strong, and made for a warm afternoon.",
+      "ingredients": ["Coffee", "Water", "Ice", "Sugar"],
+      "allergens": [],
+      "tags": ["Iced", "Vegan"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 18
+    },
+    {
+      "slug": "hot-chocolate",
+      "name": "Hot Chocolate",
+      "categorySlug": "coffee-drinks",
+      "price": 13000,
+      "description": "Thick, dark hot chocolate — no coffee, all comfort.",
+      "ingredients": ["Cocoa", "Milk", "Sugar"],
+      "allergens": ["Dairy"],
+      "tags": ["Vegetarian"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 19
+    },
+    {
+      "slug": "iced-tea",
+      "name": "Iced Tea",
+      "categorySlug": "coffee-drinks",
+      "price": 9000,
+      "description": "Brewed black tea over ice with a slice of lemon.",
+      "ingredients": ["Black tea", "Water", "Ice", "Lemon", "Sugar"],
+      "allergens": [],
+      "tags": ["Iced", "Vegan"],
+      "defaultDailyCap": 20,
+      "maxPerOrder": 5,
+      "sortOrder": 20
+    }
+  ],
+  "settings": {
+    "isOpen": true,
+    "bookingWindowDays": 14,
+    "cutoffTime": "18:00",
+    "sameDayOrdersEnabled": false,
+    "defaultDailyCap": 20,
+    "maxQtyPerItem": 5,
+    "freeDeliveryThreshold": 100000,
+    "smallOrderSurcharge": 3000,
+    "smallOrderThreshold": 50000,
+    "cashOnPickupEnabled": true,
+    "timezone": "Asia/Manila",
+    "smsEnabled": true,
+    "emailEnabled": true,
+    "messengerUrl": "https://m.me/ami-bread-and-coffee",
+    "shopPhone": "+639000000000"
+  },
+  "zones": [
+    {
+      "name": "Nearby barangays (OWNER TO CONFIRM)",
+      "areas": [],
+      "fee": 5000
+    },
+    {
+      "name": "Outer barangays (OWNER TO CONFIRM)",
+      "areas": [],
+      "fee": 10000
+    }
+  ],
+  "owner": {
+    "email": "owner@example.com",
+    "phone": "+639000000000",
+    "name": "Ami Owner (OWNER TO CONFIRM)"
+  }
+}

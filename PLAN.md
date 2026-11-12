@@ -312,7 +312,7 @@ Web scripts: `dev`, `build`, `start`, `lint`, `typecheck`, `test`, `test:e2e`.
 - `id` UUID PK, `slug` String unique, `name` String, `description` String?, `sortOrder` Int, `active` Boolean default true
 
 **MenuItem**
-- `id` UUID PK, `categoryId` FK, `slug` String unique, `name` String, `description` String, `price` Decimal(10,2), `imageUrl` String?, `active` Boolean default true, `defaultDailyCap` Int default 20 (ignored when `stockComponents` is set), `maxPerOrder` Int default 5, `stockComponents` Json? (array of `{ menuItemId, quantity }` for bundled items such as the Sampler Box), `ingredients` String[] (owner to confirm), `allergens` String[] (owner to confirm), `tags` String[] (only verified-true tags), `sortOrder` Int, `createdAt`, `updatedAt`
+- `id` UUID PK, `categoryId` FK, `slug` String unique, `name` String, `description` String, `price` Int (centavos), `weightLabel` String?, `imageUrl` String?, `active` Boolean default true, `defaultDailyCap` Int default 20 (ignored when `stockComponents` is set), `maxPerOrder` Int default 5, `stockComponents` Json? (array of `{ menuItemId, quantity }` for bundled items such as the Sampler Box), `ingredients` String[] (owner to confirm), `allergens` String[] (owner to confirm), `tags` String[] (only verified-true tags), `sortOrder` Int, `createdAt`, `updatedAt`
 - Indexes: `categoryId, active`, `active, sortOrder`
 
 **DailyItemCap**
@@ -942,20 +942,23 @@ E2E:
 
 ### Phase 2 — Database, auth, catalog, admin menu
 
-- [ ] T-013 Initialize Prisma and create full schema  
+- [x] T-013 Initialize Prisma and create full schema  
   - Depends: T-003  
   - Files: `apps/api/prisma/schema.prisma`  
   - Acceptance: `prisma validate` passes; all tables present.
+  - Progress: schema validated against Postgres. Money fields stored as integer centavos (per A-1), overriding the earlier `Decimal(10,2)` sketch so the DB matches the shared money helpers. Added `weightLabel` to MenuItem. Local dev uses `npx prisma dev` (no Docker).
 
-- [ ] T-014 Create initial migration and check constraint for `DailyItemCap`  
+- [x] T-014 Create initial migration and check constraint for `DailyItemCap`  
   - Depends: T-013  
   - Files: `apps/api/prisma/migrations/*`  
   - Acceptance: `prisma migrate dev` succeeds; check constraint exists.
+  - Progress: `20261111152301_init` applied; `20261111153000_daily_cap_checks` adds non-negative checks on `DailyItemCap.cap`/`sold` and `MenuItem.price`, plus a positive check on `OrderItem.quantity`; `20261111154000_menu_item_weight_label` adds `MenuItem.weightLabel`. Future migrations use `npm run db:migrate:diff` then `npm run db:deploy` (the local Prisma Dev proxy does not support `migrate dev`'s shadow database).
 
-- [ ] T-015 Implement seed script  
+- [x] T-015 Implement seed script  
   - Depends: T-012, T-014  
-  - Files: `apps/api/prisma/seed.ts`  
+  - Files: `apps/api/prisma/seed.ts`, `apps/api/prisma/seed-data/catalog.json`  
   - Acceptance: `npm run db:seed` populates categories, items, caps, zones, settings, owner account.
+  - Progress: 6 categories, 20 items, 266 daily cap rows (14 days), 2 delivery zones, settings, and an owner account. Sampler Box stores `stockComponents` pointing at the four loaf items. Ingredient/allergen data and drink prices are sample placeholders flagged OWNER TO CONFIRM. Seed is idempotent.
 
 - [x] T-016 Implement time helpers (Asia/Manila) and money formatting  
   - Depends: T-003  
@@ -1305,3 +1308,4 @@ All ingredient, allergen, and tag data: `OWNER TO CONFIRM`. Sample placeholders 
 - 2026-11-11: Phase 1 progress — fixed font theme tokens (display/accent utilities were never generated), added the static catalog (`lib/menu-data.ts`), `/menu` and `/menu/[slug]` pages, Ami-branded public header/footer with live open/closed status, integrated the Dish Orbit Carousel on the home page with optional rating/likes, optimized the hero asset (3.0 MB → 447 KB), and replaced boilerplate auth/dashboard branding. Fixed backend CORS so dev login works from any localhost port.
 - 2026-11-11: Added `/design-tile` (Gate A style tile) and Vitest in `apps/web` with 8 passing catalog/mapping tests. T-011 remains open for RTL, Playwright, and axe.
 - 2026-11-11: Added shared Asia/Manila time + centavo money helpers (`packages/shared/src/lib`), re-exported them from the API, and switched the web app's `formatPeso` and open/closed badge to the shared implementations. Added cutoff and booking-window tests (21 passing). Root `postinstall` now builds `@ami/shared` so a fresh clone works.
+- 2026-11-12: Phase 2 progress — local Postgres via `prisma dev` (no Docker), initial migration applied with cap checks, seed script populates 6 categories / 20 items / 266 daily caps / 2 zones / settings / owner account. Money fields stored as integer centavos. Added Prisma client singleton and `db:migrate:diff` workflow.

@@ -125,7 +125,8 @@ model MenuItem {
   slug             String   @unique
   name             String
   description      String   @default("")
-  price            Decimal  @db.Decimal(10, 2)
+  price            Int      // centavos
+  weightLabel      String?
   imageUrl         String?
   active           Boolean  @default(true)
   defaultDailyCap  Int      @default(20)
@@ -166,7 +167,7 @@ model DeliveryZone {
   id        String   @id @default(uuid())
   name      String
   areas     String[] @default([])
-  fee       Decimal  @db.Decimal(10, 2)
+  fee       Int      // centavos
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -192,9 +193,9 @@ model ShopSettings {
   sameDayOrdersEnabled Boolean  @default(false)
   defaultDailyCap      Int      @default(20)
   maxQtyPerItem        Int      @default(5)
-  freeDeliveryThreshold Decimal @db.Decimal(10, 2) @default(1000.00)
-  smallOrderSurcharge  Decimal  @db.Decimal(10, 2) @default(30.00)
-  smallOrderThreshold  Decimal  @db.Decimal(10, 2) @default(500.00)
+  freeDeliveryThreshold Int      @default(100000) // centavos
+  smallOrderSurcharge  Int      @default(3000) // centavos
+  smallOrderThreshold  Int      @default(50000) // centavos
   cashOnPickupEnabled  Boolean  @default(true)
   timezone             String   @default("Asia/Manila")
   smsEnabled           Boolean  @default(true)
@@ -217,9 +218,9 @@ model Order {
   customerEmail   String?
   deliveryAddress String?
   deliveryZoneId  String?
-  deliveryFee     Decimal         @db.Decimal(10, 2) @default(0)
-  subtotal        Decimal         @db.Decimal(10, 2)
-  total           Decimal         @db.Decimal(10, 2)
+  deliveryFee     Int             @default(0) // centavos
+  subtotal        Int // centavos
+  total           Int // centavos
   notes           String?
   attentionFlag   Boolean         @default(false)
   undoUntil       DateTime?
@@ -247,8 +248,8 @@ model OrderItem {
   menuItemId   String
   nameSnapshot String
   quantity     Int
-  unitPrice    Decimal @db.Decimal(10, 2)
-  lineTotal    Decimal @db.Decimal(10, 2)
+  unitPrice    Int // centavos
+  lineTotal    Int // centavos
 
   order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menuItem MenuItem @relation(fields: [menuItemId], references: [id])
@@ -261,7 +262,7 @@ model Payment {
   id           String        @id @default(uuid())
   orderId      String        @unique
   method       PaymentMethod
-  amount       Decimal       @db.Decimal(10, 2)
+  amount       Int           // centavos
   status       PaymentStatus @default(UNPAID)
   proofUrl     String?
   providerRef  String?
