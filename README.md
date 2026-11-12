@@ -258,7 +258,43 @@ Admin users are redirected to `/admin/dashboard`. Regular users go to `/dashboar
 
 ---
 
-## Deployment
+## Development (Ami Bread & Coffee monorepo)
+
+This repo is a monorepo. The active app is `apps/web` (Next.js) + `apps/api` (Express/Prisma). The old `frontend/` and `backend/` folders are legacy boilerplate.
+
+### First-time setup
+
+```powershell
+npm install                 # installs workspaces + builds @ami/shared (postinstall)
+npm run dev:db              # start local Postgres (Prisma Dev) — keep running
+# in another terminal:
+npm run db:migrate          # apply migrations (first run only)
+npm run db:seed             # seed categories, items, caps, owner account
+```
+
+### Daily development
+
+```powershell
+npm run dev:all             # starts DB + API + web together (concurrently)
+# or individually:
+npm run dev:db              # Postgres on :51214
+npm run dev:api             # API on :4000
+npm run dev:web             # Web on :3000
+```
+
+### Useful commands
+
+```powershell
+npm run typecheck           # typecheck all workspaces
+npm test                    # vitest (web) + jest (api)
+npm run db:migrate:diff     # print SQL diff between DB and schema (no shadow DB needed)
+npm run db:seed             # re-seed (idempotent)
+```
+
+### Notes
+- `apps/api/.env` must point at the local Prisma Dev Postgres URL (see `apps/api/.env.example`). The `prisma dev` server must be running before `db:migrate`/`db:seed`.
+- Auth endpoints live on `apps/api` (`:4000`); the web app's `NEXT_PUBLIC_API_URL` still points at the legacy auth backend (`:5000`) for now.
+- After `npm install`, `@ami/shared` is built automatically via `postinstall`. If you edit shared, run `npm run build -w packages/shared`.
 
 Both the frontend and backend include configuration for **Vercel** deployment (`vercel.json` in `/backend`). You can deploy them independently.
 

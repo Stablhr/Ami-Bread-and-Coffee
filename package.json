@@ -1,10 +1,15 @@
 {
   "name": "ami-bread-and-coffee",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "postinstall": "npm run build -w packages/shared",
     "dev": "npm run dev --workspaces --if-present",
+    "dev:db": "npm run prisma:dev -w apps/api",
+    "dev:all": "concurrently -n db,api,web -c blue,green,magenta \"npm run dev:db\" \"npm run dev:api\" \"npm run dev:web\"",
     "dev:web": "npm run dev -w apps/web",
     "dev:api": "npm run dev -w apps/api",
     "build": "npm run build --workspaces --if-present",
@@ -16,5 +21,8 @@
     "db:migrate:diff": "npm run prisma:migrate:diff -w apps/api",
     "db:deploy": "npm run prisma:deploy -w apps/api",
     "db:seed": "npm run db:seed -w apps/api"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
   }
 }
