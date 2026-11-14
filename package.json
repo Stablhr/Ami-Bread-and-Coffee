@@ -1,28 +1,16 @@
 {
   "name": "ami-bread-and-coffee",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
-    "postinstall": "npm run build -w packages/shared",
-    "dev": "npm run dev --workspaces --if-present",
-    "dev:db": "npm run prisma:dev -w apps/api",
-    "dev:all": "concurrently -n db,api,web -c blue,green,magenta \"npm run dev:db\" \"npm run dev:api\" \"npm run dev:web\"",
-    "dev:web": "npm run dev -w apps/web",
-    "dev:api": "npm run dev -w apps/api",
-    "build": "npm run build --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "test:e2e": "npm run test:e2e -w apps/web",
-    "db:migrate": "npm run prisma:deploy -w apps/api",
-    "db:migrate:diff": "npm run prisma:migrate:diff -w apps/api",
-    "db:deploy": "npm run prisma:deploy -w apps/api",
-    "db:seed": "npm run db:seed -w apps/api"
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "dev": "concurrently -n api,web -c green,magenta \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "dev:api": "npm run dev --prefix backend",
+    "dev:web": "npm run dev --prefix frontend",
+    "seed": "npm run seed:menu --prefix backend && npm run seed:admin --prefix backend",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend",
+    "lint": "npm run lint --prefix backend && npm run lint --prefix frontend"
   },
   "devDependencies": {
-    "concurrently": "^10.0.7"
+    "concurrently": "^9.2.1"
   }
 }

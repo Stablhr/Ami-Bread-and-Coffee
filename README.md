@@ -1,315 +1,78 @@
-# Express Next Auth Kit
+# Ami Bread & Coffee
 
-A production-ready full-stack boilerplate combining **Next.js 16** and **Express.js**, with a complete authentication system built in — so you can skip the setup and start building.
+Website for **Ami Bread & Coffee**, a sourdough bakery and café in Trece Martires City, Cavite. *Fresh from home.*
 
----
+- `frontend/` — Next.js 16 website (http://localhost:3000)
+- `backend/` — Express + MongoDB API (http://localhost:5000/api)
 
-> **Quick Setup:** Want to customize everything in one shot? Open **[CUSTOMIZE.md](./docs/CUSTOMIZE.md)**, fill in your project values (database, secrets, branding, etc.), so your AI agent can update all files for you automatically.
+See [PLAN.md](./PLAN.md) for the roadmap and design direction.
 
----
+## First-time setup
 
-## Features
-
-- **Full Auth Flow** — Sign up, sign in, forgot password, email verification, and password reset
-- **JWT-based Authentication** — Secure token handling with HTTP-only cookies and token rotation
-- **Email Service** — Nodemailer-powered transactional emails with HTML templates
-- **Role-based Models** — Separate `User` and `Admin` models with a shared base schema
-- **Admin Seed Script** — One command to create an admin account
-- **Rate Limiting & Security** — Helmet, CORS, express-rate-limit, body size limits, and input sanitization
-- **Validation** — Zod schemas with DTO pattern on the backend
-- **Structured Logging** — Pino logger integration
-- **Modern Frontend** — Next.js App Router with shadcn/ui, TailwindCSS v4, and TanStack Query
-- **Friendly Error Messages** — Raw backend errors are mapped to user-friendly messages on the frontend
-
----
-
-## Project Structure
-
-### Frontend (`/frontend`)
-
-```
-frontend/
-├── app/
-│   ├── (admin)/                # Admin-protected routes
-│   │   ├── admin/dashboard/    # Admin dashboard with parallel routes
-│   │   └── layout.tsx          # Auth guard (redirects non-admins)
-│   ├── (auth)/                 # Auth pages
-│   │   ├── sign-in/
-│   │   ├── sign-up/
-│   │   ├── forgot-password/
-│   │   ├── reset-password/
-│   │   └── verify-email/
-│   ├── (public)/               # Public landing page
-│   └── (user)/                 # Authenticated user routes
-│       └── dashboard/          # User dashboard with parallel routes (@profile, @settings)
-├── components/ui/              # shadcn/ui components
-└── lib/
-    ├── api/                    # Axios HTTP client, auth API calls, error handling
-    │   ├── httpClient.ts       # Axios instance with interceptors and token refresh
-    │   ├── authApi.ts          # Auth API functions
-    │   └── getFriendlyErrorMessage.ts  # Maps error codes to friendly messages
-    ├── auth/                   # Redirect utilities
-    ├── hooks/auth/             # useLogout, useMeQuery (TanStack Query)
-    └── provider/               # ReactQueryProvider
-```
-
-### Backend (`/backend`)
-
-```
-backend/
-├── api/
-│   ├── config/                 # DB connection (Mongoose) and environment config
-│   ├── controllers/            # Route handlers
-│   ├── dtos/                   # Zod validation schemas
-│   ├── middleware/             # Auth, error handler, rate limit, sanitize, validation
-│   ├── models/                 # User & Admin models (shared BaseUser schema)
-│   │   └── base/              # BaseUser schema with timestamps
-│   ├── repositories/           # Data access layer
-│   ├── routes/                 # Express router definitions
-│   ├── services/               # Business logic (auth, email)
-│   ├── templates/              # HTML email templates
-│   └── utils/                  # Error utilities
-├── scripts/
-│   └── seed-admin.ts           # Admin seed script
-```
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- MongoDB instance (local or Atlas)
-- SMTP credentials (e.g. Gmail, Resend, Mailtrap)
-
-### 1. Clone the repo
+Needs Node.js 20+ and a MongoDB database (Atlas is fine; see [docs/CREDENTIALS.md](./docs/CREDENTIALS.md)).
 
 ```bash
-git clone https://github.com/Tobikun11-Arch/express-next-auth-kit.git
-cd express-next-auth-kit
+npm run install:all
 ```
-
-### 2. Set up the Backend
 
 ```bash
-cd backend
-npm install
-cp .env.example .env
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 ```
 
-Fill in your `.env`:
-
-```env
-# Server
-PORT=5000
-NODE_ENV=development
-
-# Auth - generate with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-JWT_SECRET=your_jwt_secret_here
-JWT_REFRESH_SECRET=your_refresh_secret_here
-
-# Database
-MONGO_URI=mongodb://localhost:27017/your-db
-
-# Email
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_USER=your@email.com
-SMTP_PASS=your_app_password
-SMTP_FROM=Your App <no-reply@yourapp.com>
-
-# Cookies
-COOKIE_SECURE=false
-COOKIE_SAMESITE=strict
-
-# Seed Admin (used with `npm run seed:admin`)
-SEED_ADMIN_EMAIL=admin@example.com
-SEED_ADMIN_PASSWORD=Admin123!
-SEED_ADMIN_FIRST_NAME=Admin
-SEED_ADMIN_LAST_NAME=User
-```
-
-### 3. Seed the Admin Account
+Fill in `backend/.env` (MongoDB URI, JWT secrets, SMTP for email codes, seed admin), then load the menu and the admin account:
 
 ```bash
-npm run seed:admin
+npm run seed
 ```
 
-This creates an admin user in your MongoDB `admins` collection. Default credentials are in your `.env` — **change the password after first login**.
-
-You can re-run this command safely — it skips if the admin already exists.
-
-### 4. Start the Backend
+## Run it
 
 ```bash
 npm run dev
 ```
 
-Backend runs at `http://localhost:5000`.
-
-### 5. Set up the Frontend
-
-Open a new terminal:
+Starts the API (:5000) and the website (:3000) together. To run only one:
 
 ```bash
-cd frontend
-npm install
-cp .env.example .env
+cd frontend && npm run dev
 ```
-
-The default `.env` is already configured for local development:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
-
-### 6. Start the Frontend
 
 ```bash
-npm run dev
+cd backend && npm run dev
 ```
 
-Frontend runs at `http://localhost:3000`.
+The website still loads without the API, but the menu shows a friendly "menu is taking a break" message.
 
----
+## Accounts
 
-## Login
+| Who | How |
+|---|---|
+| Guest | No account. Can browse home, menu and visit page. |
+| Customer | Sign up at `/sign-up` with email + password, confirm the 6-digit email code, then sign in. Lands on `/account`. |
+| Admin (owner + cashier) | One shared account created by `npm run seed:admin` from `SEED_ADMIN_*` in `backend/.env`. Lands on `/admin`. |
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | `admin@example.com` | `Admin123!` |
-| User | Register via `/sign-up` | — |
+## API
 
-Admin users are redirected to `/admin/dashboard`. Regular users go to `/dashboard`.
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/api/menu` | Full menu grouped by category |
+| GET | `/api/menu/items/:slug` | One item |
+| POST | `/api/auth/register` | firstName, lastName, email, password |
+| POST | `/api/auth/verify` | email + 6-digit code |
+| POST | `/api/auth/login` | sets HTTP-only cookies |
+| GET | `/api/auth/me` | id, type (`user`/`admin`), firstName, lastName, email |
+| POST | `/api/auth/logout`, `/refresh`, `/forgot-password`, `/verify-reset-code`, `/reset-password`, `/resend-*` | |
 
----
+Unsafe requests need the CSRF header from `GET /api/auth/csrf` (the frontend `httpClient` handles this).
 
-## Auth API Routes
+## Scripts (repo root)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/auth/register` | Create a new user account |
-| `POST` | `/api/auth/verify` | Verify email with OTP code |
-| `POST` | `/api/auth/resend-verification` | Resend verification code |
-| `POST` | `/api/auth/login` | Sign in (returns JWT in HTTP-only cookies) |
-| `POST` | `/api/auth/refresh` | Refresh access token |
-| `POST` | `/api/auth/logout` | Clear session and revoke refresh token |
-| `GET` | `/api/auth/me` | Get current authenticated user |
-| `POST` | `/api/auth/forgot-password` | Send password reset code |
-| `POST` | `/api/auth/verify-reset-code` | Verify password reset code |
-| `POST` | `/api/auth/resend-reset-code` | Resend password reset code |
-| `POST` | `/api/auth/reset-password` | Reset password with code |
+| Command | What it does |
+|---|---|
+| `npm run dev` | API + website |
+| `npm run seed` | Seed menu (idempotent) and admin account |
+| `npm run build` | Build both |
+| `npm run lint` | Lint both |
 
----
-
-## Tech Stack
-
-### Frontend
-
-| Package | Purpose |
-|---------|---------|
-| Next.js 16 | App Router, SSR, routing |
-| React 19 | UI framework |
-| TailwindCSS v4 | Utility-first styling |
-| shadcn/ui | Accessible component primitives |
-| TanStack Query v5 | Server state management |
-| Axios | HTTP client with interceptors |
-| input-otp | OTP input for email verification |
-| lucide-react | Icon library |
-
-### Backend
-
-| Package | Purpose |
-|---------|---------|
-| Express.js | HTTP server framework |
-| Mongoose | MongoDB ODM |
-| jsonwebtoken | JWT creation and verification |
-| bcrypt | Password hashing |
-| Zod | Schema validation |
-| Nodemailer | Transactional email |
-| Helmet | HTTP security headers |
-| express-rate-limit | API rate limiting |
-| Pino | Structured logging |
-
----
-
-## Available Scripts
-
-### Backend
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server with hot reload |
-| `npm run build` | Compile TypeScript |
-| `npm start` | Start production server |
-| `npm run seed:admin` | Seed an admin account |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run tests with Jest |
-
-### Frontend
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start Next.js dev server |
-| `npm run build` | Build for production |
-| `npm start` | Start production server |
-| `npm run lint` | Run ESLint |
-
----
-
-## Development (Ami Bread & Coffee monorepo)
-
-This repo is a monorepo. The active app is `apps/web` (Next.js) + `apps/api` (Express/Prisma). The old `frontend/` and `backend/` folders are legacy boilerplate.
-
-### First-time setup
-
-```powershell
-npm install                 # installs workspaces + builds @ami/shared (postinstall)
-npm run dev:db              # start local Postgres (Prisma Dev) — keep running
-# in another terminal:
-npm run db:migrate          # apply migrations (first run only)
-npm run db:seed             # seed categories, items, caps, owner account
-```
-
-### Daily development
-
-```powershell
-npm run dev:all             # starts DB + API + web together (concurrently)
-# or individually:
-npm run dev:db              # Postgres on :51214
-npm run dev:api             # API on :4000
-npm run dev:web             # Web on :3000
-```
-
-### Useful commands
-
-```powershell
-npm run typecheck           # typecheck all workspaces
-npm test                    # vitest (web) + jest (api)
-npm run db:migrate:diff     # print SQL diff between DB and schema (no shadow DB needed)
-npm run db:seed             # re-seed (idempotent)
-```
-
-### Notes
-- `apps/api/.env` must point at the local Prisma Dev Postgres URL (see `apps/api/.env.example`). The `prisma dev` server must be running before `db:migrate`/`db:seed`.
-- Auth endpoints live on `apps/api` (`:4000`); the web app's `NEXT_PUBLIC_API_URL` still points at the legacy auth backend (`:5000`) for now.
-- After `npm install`, `@ami/shared` is built automatically via `postinstall`. If you edit shared, run `npm run build -w packages/shared`.
-
-Both the frontend and backend include configuration for **Vercel** deployment (`vercel.json` in `/backend`). You can deploy them independently.
-
-For the backend, make sure to set all environment variables in your Vercel project settings.
-
----
-
-## Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to get started, coding standards, and the pull request process.
-
-For major changes, please open an issue first to discuss what you'd like to change.
-
----
-
-## License
-
-This project is licensed under the [MIT License](./LICENSE).
+Backend only: `npm run seed:menu`, `npm run seed:admin`, `npm test` (inside `backend/`).

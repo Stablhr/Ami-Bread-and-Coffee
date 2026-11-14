@@ -1,30 +1,30 @@
 'use client';
 
-import {useMemo, useState, type FormEvent} from 'react';
+import {useState, type FormEvent} from 'react';
 import Link from 'next/link';
 import {useRouter, useSearchParams} from 'next/navigation';
+import {AuthHeading, FormMessage} from '@/components/auth/form-bits';
 import {Button} from '@/components/ui/button';
 import {Label} from '@/components/ui/label';
+import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from '@/components/ui/input-otp';
 import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  InputOTPSeparator
-} from '@/components/ui/input-otp';
-import {resendVerificationCode, verifyCustomerEmail} from '@/lib/api/authApi';
-import {
-  verifyPasswordResetCode,
-  resendPasswordResetCode
+  resendPasswordResetCode,
+  resendVerificationCode,
+  verifyCustomerEmail,
+  verifyPasswordResetCode
 } from '@/lib/api/authApi';
 import {getFriendlyErrorMessage} from '@/lib/api/getFriendlyErrorMessage';
 
+/**
+ * Enter the 6-digit email code. Used for two things:
+ *   /verify-email?email=…              → confirm a new account
+ *   /verify-email?email=…&mode=reset   → step 2 of "forgot password"
+ */
 export default function VerifyEmailClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const emailFromQuery = searchParams.get('email') ?? '';
-  const mode = searchParams.get('mode');
-  const isResetMode = mode === 'reset';
+  const email = (searchParams.get('email') ?? '').trim();
+  const isResetMode = searchParams.get('mode') === 'reset';
 
   const [code, setCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,165 +32,122 @@ export default function VerifyEmailClient() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const canSubmit = useMemo(() => {
-    return emailFromQuery.trim().length > 0 && code.trim().length === 6;
-  }, [emailFromQuery, code]);
+  const canSubmit = email.length > 0 && code.length === 6;
 
-  const handleVerify = async (e: FormEvent) => {
-    e.preventDefault();
-    if (isSubmitting) return;
+  const handleVerify = async (event: FormEvent) => {
+    event.preventDefault();
+    if (isSubmitting || !canSubmit) return;
 
     setIsSubmitting(true);
     setErrorMessage(null);
     setSuccessMessage(null);
-
     try {
       if (isResetMode) {
-        await verifyPasswordResetCode({
-          email: emailFromQuery.trim(),
-          code: code.trim()
-        });
-        router.push(
-          `/reset-password?email=${encodeURIComponent(emailFromQuery.trim())}&code=${code.trim()}`
-        );
+        await verifyPasswordResetCode({email, code});
+        router.push(`/reset-password?email=${encodeURIComponent(email)}&code=${code}`);
       } else {
-        await verifyCustomerEmail({
-          email: emailFromQuery.trim(),
-          code: code.trim()
-        });
-        setSuccessMessage('Your email has been verified. You can now sign in.');
+        await verifyCustomerEmail({email, code});
+        setSuccessMessage('Your email is confirmed. Taking you to sign in…');
         router.push('/sign-in');
       }
     } catch (error) {
-      setErrorMessage(getFriendlyErrorMessage(error, 'Verification failed.'));
-    } finally {
+      setErrorMessage(getFriendlyErrorMessage(error, 'That code did not work. Please try again.'));
       setIsSubmitting(false);
     }
   };
 
   const handleResend = async () => {
-    if (isResending) return;
-
+    if (isResending || !email) return;
     setIsResending(true);
     setErrorMessage(null);
     setSuccessMessage(null);
-
     try {
-      if (isResetMode) {
-        await resendPasswordResetCode({email: emailFromQuery.trim()});
-        setSuccessMessage('Reset code resent. Please check your email.');
-      } else {
-        await resendVerificationCode({email: emailFromQuery.trim()});
-        setSuccessMessage('Verification code resent. Please check your email.');
-      }
+      if (isResetMode) await resendPasswordResetCode({email});
+      else await resendVerificationCode({email});
+      setSuccessMessage('We sent a new code. Please check your inbox (and spam folder).');
     } catch (error) {
-      setErrorMessage(getFriendlyErrorMessage(error, 'Failed to resend code.'));
+      setErrorMessage(getFriendlyErrorMessage(error, 'We could not resend the code.'));
     } finally {
       setIsResending(false);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">
-          {isResetMode ? 'Check your email' : 'Verify your email'}
-        </h2>
-        <p className="text-muted-foreground">
-          {isResetMode
-            ? `Enter the 6-digit code we sent to ${emailFromQuery} to reset your password.`
-            : 'Enter the 6-digit code we sent to your email address.'}
-        </p>
-      </div>
+    <div className="space-y-7">
+      <AuthHeading
+        kicker="almost there"
+        title={isResetMode ? 'Check your email' : 'Confirm your email'}
+        description={
+          email ? (
+            <>
+              We sent a 6-digit code to <strong className="text-ink">{email}</strong>.
+            </>
+          ) : (
+            'Enter the 6-digit code we emailed you.'
+          )
+        }
+      />
 
-      <form onSubmit={handleVerify} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="otp">Verification Code</Label>
-          <div className="flex justify-center">
-            <InputOTP
-              id="otp"
-              maxLength={6}
-              value={code}
-              onChange={(value: string) =>
-                setCode(value.replace(/\D/g, '').slice(0, 6))
-              }
-              disabled={isSubmitting}
-              autoComplete="one-time-code"
-            >
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-              </InputOTPGroup>
-              <InputOTPSeparator />
-              <InputOTPGroup>
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-          </div>
+      {!email && (
+        <FormMessage tone="error">
+          We don&apos;t know which email to check. Please{' '}
+          <Link href={isResetMode ? '/forgot-password' : '/sign-up'} className="underline">
+            start again
+          </Link>
+          .
+        </FormMessage>
+      )}
+
+      <form onSubmit={handleVerify} className="space-y-5">
+        <div className="space-y-3">
+          <Label htmlFor="otp">6-digit code</Label>
+          <InputOTP
+            id="otp"
+            maxLength={6}
+            value={code}
+            onChange={(value: string) => setCode(value.replace(/\D/g, '').slice(0, 6))}
+            disabled={isSubmitting}
+            autoComplete="one-time-code"
+            inputMode="numeric"
+            containerClassName="justify-center"
+          >
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </InputOTPGroup>
+            <InputOTPSeparator />
+            <InputOTPGroup>
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </InputOTPGroup>
+          </InputOTP>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full bg-black"
-          size="lg"
-          disabled={isSubmitting || !canSubmit}
-        >
-          {isSubmitting
-            ? 'Verifying...'
-            : isResetMode
-              ? 'Verify & Continue'
-              : 'Verify Email'}
-        </Button>
+        {errorMessage && <FormMessage tone="error">{errorMessage}</FormMessage>}
+        {successMessage && <FormMessage tone="success">{successMessage}</FormMessage>}
 
+        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || !canSubmit}>
+          {isSubmitting ? 'Checking…' : isResetMode ? 'Continue' : 'Confirm email'}
+        </Button>
         <Button
           type="button"
           variant="outline"
-          className="w-full"
           size="lg"
+          className="w-full"
           onClick={handleResend}
-          disabled={isResending || emailFromQuery.trim().length === 0}
+          disabled={isResending || !email}
         >
-          {isResending ? 'Resending...' : 'Resend code'}
+          {isResending ? 'Sending…' : 'Send me a new code'}
         </Button>
-
-        {errorMessage && (
-          <div className="rounded-md border border-destructive/30 px-3 py-2 text-sm text-destructive">
-            {errorMessage}
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-            {successMessage}
-          </div>
-        )}
       </form>
 
-      <p className="text-center text-sm text-muted-foreground">
-        {isResetMode ? (
-          <>
-            Remember your password?{' '}
-            <Link
-              href="/sign-in"
-              className="text-black font-semibold hover:underline"
-            >
-              Sign in
-            </Link>
-          </>
-        ) : (
-          <>
-            Already verified?{' '}
-            <Link
-              href="/sign-in"
-              className="text-black font-semibold hover:underline"
-            >
-              Sign in
-            </Link>
-          </>
-        )}
+      <p className="border-t-2 border-dashed border-ink/25 pt-5 text-center text-ink-soft">
+        {isResetMode ? 'Remembered it?' : 'Already confirmed?'}{' '}
+        <Link href="/sign-in" className="font-bold text-cocoa underline underline-offset-4">
+          Sign in
+        </Link>
       </p>
     </div>
   );

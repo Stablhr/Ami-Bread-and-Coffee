@@ -1,66 +1,59 @@
 import type {Metadata} from 'next';
-import {Geist, Geist_Mono, JetBrains_Mono} from 'next/font/google';
+import {Fraunces, Homemade_Apple, Nunito_Sans, Patrick_Hand} from 'next/font/google';
 import './globals.css';
 import {cn} from '@/lib/utils';
 import ReactQueryProvider from '@/lib/provider/ReactQueryProvider';
+import {SHOP} from '@/lib/shop';
 
-const jetbrainsMono = JetBrains_Mono({
+// Soft vintage serif for headings.
+const fraunces = Fraunces({
   subsets: ['latin'],
-  variable: '--font-mono'
+  axes: ['SOFT', 'WONK', 'opsz'],
+  variable: '--font-fraunces'
 });
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
+// Hand-printed letters, like the item names on the shop's printed menu.
+const patrick = Patrick_Hand({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-patrick'
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin']
+// Scratchy script, like "fresh from home". Large accents only.
+const homemade = Homemade_Apple({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-homemade'
+});
+
+// Clean, friendly body and form text.
+const nunito = Nunito_Sans({
+  subsets: ['latin'],
+  variable: '--font-ui'
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://express-next-auth-kit.vercel.app'),
-  title: 'App name',
-  description: 'App name description',
-  icons: {
-    icon: '/next.svg',
-    apple: '/next.svg'
+  title: {
+    default: `${SHOP.name} · fresh from home`,
+    template: `%s · ${SHOP.name}`
   },
-  openGraph: {
-    title: 'App name',
-    description: 'App name description',
-    url: 'https://express-next-auth-kit.vercel.app/',
-    type: 'website',
-    images: [
-      {
-        url: '/assets/logo.png',
-        width: 1200,
-        height: 630,
-        alt: 'App name Preview'
-      }
-    ]
-  }
+  description:
+    'Sourdough breads, scones, focaccia, pasta and coffee, fresh from home in Trece Martires City, Cavite.'
 };
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
   return (
     <html
       lang="en"
       className={cn(
-        'h-full',
-        'antialiased',
-        geistSans.variable,
-        geistMono.variable,
-        'font-mono',
-        jetbrainsMono.variable
+        'h-full antialiased',
+        fraunces.variable,
+        patrick.variable,
+        homemade.variable,
+        nunito.variable
       )}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col">
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>

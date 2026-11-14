@@ -1,7 +1,6 @@
 export type UserType = 'user' | 'admin';
 
-export function getDashboardPath(userType: UserType) {
-  if (userType === 'admin') return '/admin/dashboard';
-  if (userType === 'user') return '/dashboard';
-  return '/customer/dashboard';
+/** Where each kind of account lands after signing in. */
+export function getHomePathFor(userType: UserType) {
+  return userType === 'admin' ? '/admin' : '/account';
 }

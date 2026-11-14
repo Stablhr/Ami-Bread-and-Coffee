@@ -2,129 +2,196 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * Ami Bread & Coffee — "fresh from home" vintage theme.
+ * Taken from the shop itself: the terracotta line-art logo, the hand-lettered
+ * printed menu on grey-cream paper, and the dark wood + golden window light
+ * inside the store.
+ */
 
 @theme inline {
+  /* shadcn semantic tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-mono);
-  --font-heading: var(--font-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* brand palette */
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-linen: var(--linen);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-cocoa: var(--cocoa);
+  --color-cocoa-dark: var(--cocoa-dark);
+  --color-wood: var(--wood);
+  --color-wood-light: var(--wood-light);
+  --color-honey: var(--honey);
+  --color-cream: var(--cream);
+  --color-clay: var(--clay);
+  --color-slate: var(--slate);
+  --color-blueberry: var(--blueberry);
+  --color-tomato: var(--tomato);
+  --color-leaf: var(--leaf);
+
+  /* type */
+  --font-sans: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-hand: var(--font-patrick), "Comic Sans MS", cursive;
+  --font-script: var(--font-homemade), cursive;
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  --paper: #efeae2; /* printed menu paper */
+  --paper-deep: #e4dccf;
+  --linen: #f8f4ee; /* cards */
+  --ink: #2b2420; /* hand-lettered ink */
+  --ink-soft: #5a4f47; /* secondary text, 7.0:1 on paper */
+  --cocoa: #8b451e; /* logo terracotta, 5.9:1 on paper */
+  --cocoa-dark: #6b3315;
+  --wood: #231812; /* counter + shelves */
+  --wood-light: #3a2a1f;
+  --honey: #e0a64b; /* golden window light, 7.1:1 on wood */
+  --cream: #f6eedf; /* text on wood */
+  --clay: #b08a73; /* brush tag behind "3 for 220" */
+  --slate: #66625e; /* sampler: dried fruits & nuts */
+  --blueberry: #3f5ea6; /* sampler: blueberry */
+  --tomato: #a23b2a; /* errors */
+  --leaf: #3f6b3a; /* open / success */
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--linen);
+  --card-foreground: var(--ink);
+  --popover: var(--linen);
+  --popover-foreground: var(--ink);
+  --primary: var(--cocoa);
+  --primary-foreground: var(--cream);
+  --secondary: var(--linen);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-deep);
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--honey);
+  --accent-foreground: var(--ink);
+  --destructive: var(--tomato);
+  --border: var(--ink);
+  --input: var(--linen);
+  --ring: var(--cocoa);
+  --radius: 0.75rem;
+
+  /* Paper grain: tiny SVG noise, only behind the page, never over text blocks. */
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .17 0 0 0 0 .14 0 0 0 0 .12 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+
   html {
-    @apply font-mono;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    background-image: var(--paper-grain);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 100, "WONK" 0;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--cocoa);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: var(--honey);
+    color: var(--ink);
+  }
+}
+
+@layer components {
+  /* Wood-panel section, like the shop counter in golden morning light. */
+  .wood-panel {
+    background-color: var(--wood);
+    background-image:
+      radial-gradient(120% 90% at 85% 0%, rgb(224 166 75 / 0.28), transparent 60%),
+      radial-gradient(80% 60% at 0% 100%, rgb(139 69 30 / 0.25), transparent 70%),
+      var(--paper-grain);
+    color: var(--cream);
+  }
+
+  /* Dotted leader between a menu item name and its price. */
+  .menu-leader {
+    flex: 1 1 auto;
+    min-width: 1.5rem;
+    border-bottom: 2px dotted color-mix(in srgb, var(--ink) 45%, transparent);
+    transform: translateY(-0.35em);
+  }
+
+  /* Letterpress-style button shadow. */
+  .stamp-shadow {
+    box-shadow: 3px 3px 0 0 var(--ink);
+  }
+  .stamp-shadow:hover {
+    box-shadow: 4px 4px 0 0 var(--ink);
+    transform: translate(-1px, -1px);
+  }
+  .stamp-shadow:active {
+    box-shadow: 1px 1px 0 0 var(--ink);
+    transform: translate(2px, 2px);
+  }
+
+  /* Recolourable brand wordmark (the hand-lettered "ami"). */
+  .wordmark {
+    display: inline-block;
+    background-color: currentColor;
+    -webkit-mask: url("/brand/wordmark-ami.png") center / contain no-repeat;
+    mask: url("/brand/wordmark-ami.png") center / contain no-repeat;
+    aspect-ratio: 591 / 231;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

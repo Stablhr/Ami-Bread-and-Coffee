@@ -82,12 +82,26 @@ function isWithinGraceWindow(rotatedAt: Date) {
 }
 
 export const authService = {
+  /** Public profile fields for the signed-in account (used by GET /auth/me). */
+  async getProfile(userId: string, type: 'user' | 'admin') {
+    const repository = type === 'admin' ? adminRepository : userRepository;
+    const account = await repository.findById(userId);
+    if (!account) {
+      throw new ApiError(401, ErrorCodes.UNAUTHORIZED, 'Account not found');
+    }
+    return {
+      firstName: account.firstName,
+      lastName: account.lastName,
+      email: account.email
+    };
+  },
+
   async register(data: {
     firstName: string;
     lastName: string;
     email: string;
     password: string;
-    username: string;
+    username?: string;
   }) {
     const [existingEmail] = await Promise.all([
       userRepository.findByEmail(data.email)

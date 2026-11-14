@@ -3,7 +3,6 @@ import {httpClient} from './httpClient';
 type RegisterRequest = {
   firstName: string;
   lastName: string;
-  username: string;
   email: string;
   password: string;
 };
@@ -22,11 +21,16 @@ type LoginResponse = {
 };
 type LogoutResponse = {message: string};
 
+export type MeUser = {
+  id: string;
+  type: 'admin' | 'user';
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
 type MeResponse = {
-  user: {
-    id: string;
-    type: 'admin' | 'user';
-  };
+  user: MeUser;
 };
 
 export async function registerCustomer(data: RegisterRequest) {

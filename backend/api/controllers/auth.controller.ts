@@ -31,10 +31,13 @@ export const authController = {
         throw new ApiError(401, ErrorCodes.UNAUTHORIZED, 'Invalid token');
       }
 
+      const profile = await authService.getProfile(req.auth.userId, req.auth.type);
+
       res.status(200).json({
         user: {
           id: req.auth.userId,
-          type: req.auth.type
+          type: req.auth.type,
+          ...profile
         }
       });
     } catch (error) {

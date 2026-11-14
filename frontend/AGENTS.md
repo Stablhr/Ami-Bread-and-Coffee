@@ -17,15 +17,22 @@ npm run lint         # ESLint
 ## Architecture
 
 ```
-app/(auth)/         # Public auth pages (sign-in, sign-up, forgot/reset password, verify email)
-app/(user)/         # User dashboard — /dashboard (parallel routes: @profile, @settings)
-app/(admin)/        # Admin dashboard — /admin/dashboard (parallel routes: @profile, @settings)
-app/(public)/       # Public landing page
-lib/api/            # Axios HTTP client, auth API calls, error handling
+app/(public)/       # Site with header + footer: / (home), /menu, /visit, /account (customers only)
+app/(auth)/         # sign-in, sign-up, verify-email (?mode=reset for password reset), forgot/reset-password
+app/(admin)/admin/  # Admin area (owner + cashier shared account), guarded in (admin)/layout.tsx
+components/brand/   # Logo, "ami" wordmark, doodles (asterisk, heart, wavy rule), section heading, brush tag
+components/layout/  # Site header/footer, open-now status, page loading
+components/menu/    # Printed-menu pieces: item row with dotted leader, category block, sampler box
+components/auth/    # Form bits (password checklist, messages), RequireRole guard, sign-out button
+components/ui/      # shadcn/ui primitives, restyled to the shop theme
+lib/api/            # httpClient (Axios, auth/CSRF/refresh), authApi, menuApi (server fetch)
+lib/shop.ts         # Shop name, address, hours, phone, Facebook, map links, peso formatting
 lib/hooks/          # React Query hooks (useMeQuery, useLogout)
-lib/auth/           # Redirect utilities
-lib/provider/       # ReactQueryProvider
 ```
+
+## Design
+
+"Fresh from home" vintage theme from the real shop (logo, printed menu, wood counter). Tokens live in `app/globals.css` (`paper`, `linen`, `ink`, `cocoa`, `wood`, `honey`, `cream`…). Fonts: `font-display` (Fraunces), `font-hand` (Patrick Hand), `font-script` (Homemade Apple, accents only, never body text), `font-sans` (Nunito Sans). Keep text contrast ≥ 4.5:1, touch targets ≥ 48px, decorative SVGs `aria-hidden`. Admin pages: palette only, no texture or doodles.
 
 ## Code Style
 
@@ -33,7 +40,8 @@ lib/provider/       # ReactQueryProvider
 - Frontend errors go through `getFriendlyErrorMessage()` — never show raw backend messages to users
 - React Query hooks in `frontend/lib/hooks/` for all server state
 - Use shadcn/ui components from `frontend/components/ui/` — never build form inputs or modals from scratch
-- API calls live in `frontend/lib/api/authApi.ts` — keep them centralized
+- API calls live in `frontend/lib/api/` (`authApi.ts`, `menuApi.ts`) — keep them centralized
+- Shop facts (address, hours, phone) come from `lib/shop.ts` — never hard-code them in pages
 
 ## Error Handling
 
@@ -52,19 +60,9 @@ The `getFriendlyErrorMessage()` function maps error codes to user-friendly messa
 
 ## Route Groups
 
-- `(auth)` — No auth required. Pages here are public.
-- `(user)` — Requires authenticated user. Redirects to sign-in if not logged in.
-- `(admin)` — Requires admin role. Redirects to user dashboard if not admin.
-- `(public)` — No auth required. Landing/marketing pages.
-
-## Dashboard Layouts
-
-Both user and admin dashboards use **parallel routes** (`@profile`, `@settings`) with a sidebar + mobile bottom nav. Tab state is managed via `?tab=` search params.
-
-To add a new tab:
-1. Create `@tabname/page.tsx` in the dashboard folder
-2. Add the tab to `TABS` array in the dashboard `layout.tsx`
-3. Add the slot to `slotByTab` and `DashboardLayoutProps`
+- `(public)` — No auth required, except `/account`, which is wrapped in `<RequireRole role="user">`.
+- `(auth)` — Auth forms. Signed-in visitors are redirected to their home (`getHomePathFor`).
+- `(admin)` — Requires an admin account; customers go to `/account`, guests to `/sign-in`.
 
 ## Security Rules
 

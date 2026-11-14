@@ -14,7 +14,8 @@ export const ErrorCodes = {
   INTERNAL_ERROR: 'INTERNAL_ERROR',
   CSRF_TOKEN_INVALID: 'CSRF_TOKEN_INVALID',
   USER_NOT_FOUND: 'USER_NOT_FOUND',
-  RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED'
+  RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
+  NOT_FOUND: 'NOT_FOUND'
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

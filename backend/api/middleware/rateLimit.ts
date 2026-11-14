@@ -34,7 +34,7 @@ export const authActionLimiter = makeLimiter({
 
 export const authReadLimiter = makeLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 50,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
   handler: rateLimitHandler
@@ -51,6 +51,14 @@ export const uploadLimiter = makeLimiter({
 export const defaultLimiter = makeLimiter({
   windowMs: 15 * 60 * 1000,
   max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler
+});
+
+export const publicReadLimiter = makeLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 600,
   standardHeaders: true,
   legacyHeaders: false,
   handler: rateLimitHandler

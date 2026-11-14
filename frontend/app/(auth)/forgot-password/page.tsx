@@ -1,63 +1,52 @@
 'use client';
+
 import {useState} from 'react';
 import Link from 'next/link';
-import {ArrowLeft, Send} from 'lucide-react';
+import {useRouter} from 'next/navigation';
+import {Mail} from 'lucide-react';
+import {AuthHeading, FormMessage} from '@/components/auth/form-bits';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
-import {useRouter} from 'next/navigation';
+import {sendPasswordResetCode} from '@/lib/api/authApi';
 import {getFriendlyErrorMessage} from '@/lib/api/getFriendlyErrorMessage';
-import { sendPasswordResetCode } from '@/lib/api/authApi';
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (isSubmitting) return;
-
     setIsSubmitting(true);
     setErrorMessage(null);
     try {
-      await sendPasswordResetCode({email: email.trim()}); 
+      await sendPasswordResetCode({email: email.trim()});
       router.push(`/verify-email?email=${encodeURIComponent(email.trim())}&mode=reset`);
     } catch (error) {
-      setErrorMessage(
-        getFriendlyErrorMessage(error, 'Unable to send reset code. Please try again.')
-      );
-    } finally {
+      setErrorMessage(getFriendlyErrorMessage(error, 'We could not send a reset code. Please try again.'));
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <Link
-        href="/sign-in"
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft size={16} />
-        Back to sign in
-      </Link>
+    <div className="space-y-7">
+      <AuthHeading
+        kicker="it happens"
+        title="Forgot your password?"
+        description="Enter the email you signed up with and we'll send you a 6-digit code."
+      />
 
-      <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">
-          Forgot password?
-        </h2>
-        <p className="text-muted-foreground">
-          Enter your email and we&apos;ll send you a 6-digit code to reset your password.
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
+            inputMode="email"
+            autoComplete="email"
             placeholder="you@example.com"
             value={email}
             onChange={e => setEmail(e.target.value)}
@@ -66,22 +55,20 @@ export default function ForgotPasswordPage() {
           />
         </div>
 
-        <Button
-          type="submit"
-          className="w-full bg-black"
-          size="lg"
-          disabled={isSubmitting}
-        >
-          <Send size={18} />
-          {isSubmitting ? 'Sending...' : 'Send Code'}
-        </Button>
+        {errorMessage && <FormMessage tone="error">{errorMessage}</FormMessage>}
 
-        {errorMessage && (
-          <div className="rounded-md border border-destructive/30 px-3 py-2 text-sm text-destructive">
-            {errorMessage}
-          </div>
-        )}
+        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || !email}>
+          <Mail aria-hidden="true" />
+          {isSubmitting ? 'Sending…' : 'Send me a code'}
+        </Button>
       </form>
+
+      <p className="border-t-2 border-dashed border-ink/25 pt-5 text-center text-ink-soft">
+        Remembered it?{' '}
+        <Link href="/sign-in" className="font-bold text-cocoa underline underline-offset-4">
+          Sign in
+        </Link>
+      </p>
     </div>
   );
 }
