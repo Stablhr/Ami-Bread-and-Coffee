@@ -12,7 +12,7 @@ npm run dev          # Start dev server (port 5000)
 npm run build        # Compile TypeScript
 npm run start        # Start production server
 npm run seed:admin   # Seed the shared admin account (owner + cashier)
-npm run seed:menu    # Upsert the menu from the printed menus (idempotent)
+npm run seed:menu    # Add missing menu items + fill blank fields; never overwrites admin edits (--restore re-adds deleted items)
 npm run lint         # ESLint
 npm test             # Jest (no test suite included)
 ```
@@ -25,7 +25,7 @@ api/controllers/     # Route handlers (thin — delegate to services)
 api/services/        # Business logic (auth, email)
 api/repositories/    # Data access layer (user, admin)
 api/middleware/       # Auth, validation, rate limiting, sanitize (NoSQL injection prevention), error handler
-api/models/          # Mongoose models: Admin, User (BaseUser schema), Category, MenuItem (prices in whole pesos)
+api/models/          # Mongoose models: Admin, User (BaseUser schema), Category, MenuItem (prices in whole pesos), ProductImage (photos stored in MongoDB)
 api/routes/          # Express router definitions
 api/templates/       # HTML email templates
 api/dtos/            # Zod validation schemas
@@ -40,6 +40,10 @@ scripts/             # Seed scripts (seed-admin.ts, seed-menu.ts)
 /api/auth/*          # register, verify, login, refresh, logout, me (+ names/email), password reset
 /api/menu            # GET full menu grouped by category (public)
 /api/menu/items/:slug  # GET one item (public)
+/api/images/:id      # GET an uploaded product photo (public, cached forever, CORP cross-origin)
+/api/admin/*         # requireAuth + requireAdmin:
+                     #   GET /menu, POST /menu/items, PATCH /menu/items/:id, DELETE /menu/items/:id,
+                     #   POST /uploads/image (multipart field "image", JPG/PNG/WebP, max 2 MB, magic-byte checked)
 ```
 
 ## Code Style

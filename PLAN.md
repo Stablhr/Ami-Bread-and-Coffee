@@ -72,9 +72,9 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 
 ### Step 4 — Admin basics
 - [x] `/admin` guarded page (shared owner/cashier account from `npm run seed:admin`).
-- [ ] Menu manager: add/edit items and prices, mark sold out, upload photos.
+- [x] Products manager (`/admin/products`): add, edit, delete; photo upload (resized in the browser, stored in MongoDB); ingredients; allergens; price and bundle deal; favorite; available/sold-out toggle.
+- [ ] Show product photos, ingredients and allergens to customers (clickable menu items).
 - [ ] Shop settings: open/closed switch, hours, contact.
-- [ ] Item photos on the menu (owner to supply).
 
 ### Step 5 — Ordering
 - [ ] Cart (guests are asked to sign in before checkout).
@@ -93,6 +93,9 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 3. Pickup only, or delivery too? If delivery: areas and fees.
 4. Hot/iced: same price? Any size options?
 5. "Welsch's Zero" on the printed menu, shown on the site as "Welch's Zero". Is that right?
+6. Ingredients and allergens were pre-filled as a draft from the menus/posters. Owner to check each product in Admin → Products.
+7. "Espresso" loaf is "Espresso Choco" on the poster; rename in Admin if that's the real name.
 
 ## 7. Changelog
+- 2026-11-15 — Admin products manager (add/edit/delete, photos, ingredients, allergens, prices). Seasonal Specials added from posters. `seed:menu` no longer overwrites admin edits.
 - 2026-11-14 — Restarted the project: single MongoDB backend, rebuilt frontend in the "fresh from home" vintage style; home, menu, visit, auth, account and admin placeholder done; menu seeded from the printed menus.

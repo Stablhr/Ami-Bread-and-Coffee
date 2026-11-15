@@ -58,6 +58,9 @@ The website still loads without the API, but the menu shows a friendly "menu is 
 |---|---|---|
 | GET | `/api/menu` | Full menu grouped by category |
 | GET | `/api/menu/items/:slug` | One item |
+| GET | `/api/images/:id` | Uploaded product photo |
+| GET / POST / PATCH / DELETE | `/api/admin/menu`, `/api/admin/menu/items[/:id]` | Admin only: list, add, edit, delete products |
+| POST | `/api/admin/uploads/image` | Admin only: upload a product photo (field `image`) |
 | POST | `/api/auth/register` | firstName, lastName, email, password |
 | POST | `/api/auth/verify` | email + 6-digit code |
 | POST | `/api/auth/login` | sets HTTP-only cookies |

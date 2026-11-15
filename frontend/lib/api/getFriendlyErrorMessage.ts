@@ -71,6 +71,16 @@ export function getFriendlyErrorMessage(
         return 'Too many requests. Please wait a moment and try again.';
       case 'NETWORK_ERROR':
         return 'Network error. Please check your connection and try again.';
+      case 'INVALID_IMAGE':
+        return 'That file is not a photo we can use. Please choose a JPG, PNG or WebP image.';
+      case 'IMAGE_TOO_LARGE':
+        return 'That photo is too large. Please choose a smaller one.';
+      case 'NOT_FOUND':
+        return 'We could not find that item. It may have been deleted.';
+      case 'FORBIDDEN':
+        return 'You do not have permission to do that.';
+      case 'UNAUTHORIZED':
+        return 'Your session has ended. Please sign in again.';
       default:
         break;
     }

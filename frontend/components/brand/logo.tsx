@@ -9,8 +9,8 @@ export function LogoGirl({className, priority}: {className?: string; priority?: 
       src="/brand/logo-girl.png"
       alt=""
       aria-hidden="true"
-      width={290}
-      height={406}
+      width={355}
+      height={497}
       priority={priority}
       className={cn('h-auto w-12', className)}
     />

@@ -18,6 +18,10 @@ export interface MenuItemDocument extends mongoose.Document {
   isFavorite: boolean;
   isAvailable: boolean;
   imageUrl?: string | null;
+  /** What goes into the item, shown on the item page. */
+  ingredients: string[];
+  /** Common allergens, e.g. "Wheat (gluten)", "Milk", "Tree nuts". */
+  allergens: string[];
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
@@ -42,6 +46,8 @@ const MenuItemSchema = new Schema<MenuItemDocument>(
     isFavorite: {type: Boolean, default: false},
     isAvailable: {type: Boolean, default: true},
     imageUrl: {type: String, default: null},
+    ingredients: {type: [String], default: []},
+    allergens: {type: [String], default: []},
     sortOrder: {type: Number, default: 0}
   },
   {timestamps: true}

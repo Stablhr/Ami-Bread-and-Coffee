@@ -20,12 +20,16 @@ npm run lint         # ESLint
 app/(public)/       # Site with header + footer: / (home), /menu, /visit, /account (customers only)
 app/(auth)/         # sign-in, sign-up, verify-email (?mode=reset for password reset), forgot/reset-password
 app/(admin)/admin/  # Admin area (owner + cashier shared account), guarded in (admin)/layout.tsx
+                    #   /admin/products (list, availability toggle, delete), /new, /[id] (edit)
 components/brand/   # Logo, "ami" wordmark, doodles (asterisk, heart, wavy rule), section heading, brush tag
 components/layout/  # Site header/footer, open-now status, page loading
 components/menu/    # Printed-menu pieces: item row with dotted leader, category block, sampler box
+components/admin/   # Product form, photo upload field, ingredient tag list, delete dialog, product photo
 components/auth/    # Form bits (password checklist, messages), RequireRole guard, sign-out button
 components/ui/      # shadcn/ui primitives, restyled to the shop theme
-lib/api/            # httpClient (Axios, auth/CSRF/refresh), authApi, menuApi (server fetch)
+lib/api/            # httpClient (Axios, auth/CSRF/refresh), authApi, adminMenuApi, menuApi (server fetch, no-store)
+lib/images.ts       # resolveImageUrl(): "/api/images/<id>" -> backend URL, "/products/x.webp" -> frontend public
+lib/image-resize.ts # Shrinks photos in the browser before upload
 lib/shop.ts         # Shop name, address, hours, phone, Facebook, map links, peso formatting
 lib/hooks/          # React Query hooks (useMeQuery, useLogout)
 ```
@@ -40,7 +44,7 @@ lib/hooks/          # React Query hooks (useMeQuery, useLogout)
 - Frontend errors go through `getFriendlyErrorMessage()` — never show raw backend messages to users
 - React Query hooks in `frontend/lib/hooks/` for all server state
 - Use shadcn/ui components from `frontend/components/ui/` — never build form inputs or modals from scratch
-- API calls live in `frontend/lib/api/` (`authApi.ts`, `menuApi.ts`) — keep them centralized
+- API calls live in `frontend/lib/api/` (`authApi.ts`, `adminMenuApi.ts`, `menuApi.ts`) — keep them centralized
 - Shop facts (address, hours, phone) come from `lib/shop.ts` — never hard-code them in pages
 
 ## Error Handling

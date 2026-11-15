@@ -63,3 +63,11 @@ export const publicReadLimiter = makeLimiter({
   legacyHeaders: false,
   handler: rateLimitHandler
 });
+
+export const adminLimiter = makeLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 400,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler
+});

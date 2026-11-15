@@ -12,6 +12,8 @@ export type MenuItemView = {
   isFavorite: boolean;
   isAvailable: boolean;
   imageUrl: string | null;
+  ingredients: string[];
+  allergens: string[];
 };
 
 export type MenuCategoryView = {
@@ -32,6 +34,8 @@ type ItemLike = {
   isFavorite?: boolean;
   isAvailable?: boolean;
   imageUrl?: string | null;
+  ingredients?: string[];
+  allergens?: string[];
 };
 
 function toItemView(item: ItemLike): MenuItemView {
@@ -44,7 +48,9 @@ function toItemView(item: ItemLike): MenuItemView {
     deal: item.deal ? {quantity: item.deal.quantity, price: item.deal.price} : null,
     isFavorite: Boolean(item.isFavorite),
     isAvailable: item.isAvailable !== false,
-    imageUrl: item.imageUrl ?? null
+    imageUrl: item.imageUrl ?? null,
+    ingredients: item.ingredients ?? [],
+    allergens: item.allergens ?? []
   };
 }
 
@@ -74,7 +80,11 @@ export const menuService = {
     }
     return {
       ...toItemView(item),
-      category: {name: item.category.name, slug: item.category.slug}
+      category: {
+        name: item.category.name,
+        slug: item.category.slug,
+        note: item.category.note ?? null
+      }
     };
   }
 };
