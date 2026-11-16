@@ -16,7 +16,9 @@ const envSchema = z.object({
   SMTP_FROM: z.string().optional(),
   COOKIE_SECURE: z.string().optional(),
   COOKIE_SAMESITE: z.enum(['strict', 'lax', 'none']).optional(),
-  CORS_ORIGINS: z.string().optional()
+  CORS_ORIGINS: z.string().optional(),
+  // Shared with the frontend proxy so the backend can trust its x-client-ip header.
+  PROXY_SECRET: z.string().min(16).optional()
 });
 
 const parsed = envSchema.safeParse(process.env);

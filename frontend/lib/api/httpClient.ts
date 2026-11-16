@@ -5,6 +5,7 @@ import axios, {
   InternalAxiosRequestConfig
 } from 'axios';
 import type {ApiErrorPayload, NormalizedApiError} from './types';
+import {PUBLIC_API_BASE} from './config';
 
 function normalizeApiBaseUrl(rawValue: string | undefined): string | undefined {
   const trimmed = (rawValue ?? '').trim().replace(/\/+$/, '');
@@ -19,7 +20,7 @@ function normalizeApiBaseUrl(rawValue: string | undefined): string | undefined {
   return `${isLocalhost ? 'http' : 'https'}://${trimmed}`;
 }
 
-const resolvedBaseUrl = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+const resolvedBaseUrl = normalizeApiBaseUrl(PUBLIC_API_BASE);
 
 let refreshPromise: Promise<void> | null = null;
 
