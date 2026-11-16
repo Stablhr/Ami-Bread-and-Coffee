@@ -71,6 +71,8 @@ export function getFriendlyErrorMessage(
         return 'Too many requests. Please wait a moment and try again.';
       case 'NETWORK_ERROR':
         return 'Network error. Please check your connection and try again.';
+      case 'SERVER_UNAVAILABLE':
+        return "We can't reach the shop's server right now. Please try again in a few minutes.";
       case 'INVALID_IMAGE':
         return 'That file is not a photo we can use. Please choose a JPG, PNG or WebP image.';
       case 'IMAGE_TOO_LARGE':

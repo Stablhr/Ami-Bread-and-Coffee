@@ -1,4 +1,5 @@
 import {NextResponse, type NextRequest} from 'next/server';
+import {backendOrigin} from '@/lib/api/config';
 
 /**
  * Forwards every /api/* request from the browser to the Express backend.
@@ -8,19 +9,18 @@ import {NextResponse, type NextRequest} from 'next/server';
  * private windows block. Going through the website's own /api keeps the
  * cookies first-party, so sign-in works everywhere.
  *
- * Env (Vercel → frontend project → Settings → Environment Variables):
- *   BACKEND_URL   e.g. https://ami-backend.vercel.app   (no trailing /api)
- *   PROXY_SECRET  same value as in the backend project
+ * Optional env (Vercel → frontend project → Environment Variables):
+ *   BACKEND_URL   override the backend address (see lib/api/config.ts)
+ *   PROXY_SECRET  same value as in the backend project (per-visitor rate limits)
  */
-const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:5000').replace(/\/+$/, '');
-
 export function proxy(request: NextRequest) {
-  const target = new URL(request.nextUrl.pathname + request.nextUrl.search, BACKEND_URL);
+  const target = new URL(request.nextUrl.pathname + request.nextUrl.search, backendOrigin());
 
   const headers = new Headers(request.headers);
   // Pass the visitor's IP along so the backend rate-limits per visitor, not
   // per Vercel server. The secret proves the header came from us.
-  const visitorIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip');
+  const visitorIp =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip');
   headers.delete('x-client-ip');
   headers.delete('x-proxy-secret');
   if (visitorIp && process.env.PROXY_SECRET) {

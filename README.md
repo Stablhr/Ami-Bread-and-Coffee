@@ -93,9 +93,10 @@ MongoDB Atlas → Network Access must allow Vercel (`0.0.0.0/0`), because Vercel
 
 | Name | Value |
 |---|---|
-| `BACKEND_URL` | your backend URL, e.g. `https://ami-backend.vercel.app` (no `/api`) |
 | `PROXY_SECRET` | the same random string as the backend |
-| `NEXT_PUBLIC_API_URL` | **delete it** if it exists |
+| `BACKEND_URL` | optional. Defaults to `https://ami-bread-and-coffee-p2yn.vercel.app` on Vercel (see `frontend/lib/api/config.ts`) |
+
+`NEXT_PUBLIC_API_URL` is no longer used: the browser always calls the website's own `/api`.
 
 Redeploy both projects after changing variables (Deployments → ⋯ → Redeploy).
 

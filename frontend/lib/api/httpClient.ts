@@ -85,6 +85,17 @@ function normalizeAxiosError(error: unknown): NormalizedApiError {
     };
   }
 
+  // The server answered, but not with our JSON error shape (e.g. a hosting
+  // error page). That's a server problem, not the visitor's internet.
+  if (status !== null) {
+    return {
+      status,
+      code: 'SERVER_UNAVAILABLE',
+      message: `Server responded with ${status}`,
+      details: undefined
+    };
+  }
+
   return {
     ...fallback,
     status,
