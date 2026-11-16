@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {Heart, Pencil, Plus, Search, Trash2} from 'lucide-react';
 import {DeleteProductDialog} from '@/components/admin/delete-product-dialog';
-import {ProductPhoto} from '@/components/admin/product-photo';
+import {ProductPhoto} from '@/components/menu/product-photo';
 import {FormMessage} from '@/components/auth/form-bits';
 import {PageLoading} from '@/components/layout/page-loading';
 import {Button, buttonVariants} from '@/components/ui/button';

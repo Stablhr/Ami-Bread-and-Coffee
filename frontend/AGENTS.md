@@ -17,13 +17,13 @@ npm run lint         # ESLint
 ## Architecture
 
 ```
-app/(public)/       # Site with header + footer: / (home), /menu, /visit, /account (customers only)
+app/(public)/       # Site with header + footer: / (home), /menu, /menu/[slug] (item page), /visit, /account (customers only)
 app/(auth)/         # sign-in, sign-up, verify-email (?mode=reset for password reset), forgot/reset-password
 app/(admin)/admin/  # Admin area (owner + cashier shared account), guarded in (admin)/layout.tsx
                     #   /admin/products (list, availability toggle, delete), /new, /[id] (edit)
 components/brand/   # Logo, "ami" wordmark, doodles (asterisk, heart, wavy rule), section heading, brush tag
 components/layout/  # Site header/footer, open-now status, page loading
-components/menu/    # Printed-menu pieces: item row with dotted leader, category block, sampler box
+components/menu/    # Printed-menu pieces: clickable item row, category block, sampler box, specials shelf, product photo
 components/admin/   # Product form, photo upload field, ingredient tag list, delete dialog, product photo
 components/auth/    # Form bits (password checklist, messages), RequireRole guard, sign-out button
 components/ui/      # shadcn/ui primitives, restyled to the shop theme

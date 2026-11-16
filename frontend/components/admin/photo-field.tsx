@@ -3,7 +3,7 @@
 import {useId, useRef, useState} from 'react';
 import {ImageUp, Trash2} from 'lucide-react';
 import {Button} from '@/components/ui/button';
-import {ProductPhoto} from './product-photo';
+import {ProductPhoto} from '@/components/menu/product-photo';
 import {uploadProductPhoto} from '@/lib/api/adminMenuApi';
 import {getFriendlyErrorMessage} from '@/lib/api/getFriendlyErrorMessage';
 import {resizeImage} from '@/lib/image-resize';

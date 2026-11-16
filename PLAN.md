@@ -73,7 +73,7 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 ### Step 4 — Admin basics
 - [x] `/admin` guarded page (shared owner/cashier account from `npm run seed:admin`).
 - [x] Products manager (`/admin/products`): add, edit, delete; photo upload (resized in the browser, stored in MongoDB); ingredients; allergens; price and bundle deal; favorite; available/sold-out toggle.
-- [ ] Show product photos, ingredients and allergens to customers (clickable menu items).
+- [x] Clickable menu: every item opens `/menu/[slug]` with photo, ingredients, allergens and related items; seasonal specials shown as photo cards on the menu and home page.
 - [ ] Shop settings: open/closed switch, hours, contact.
 
 ### Step 5 — Ordering
@@ -97,5 +97,6 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 7. "Espresso" loaf is "Espresso Choco" on the poster; rename in Admin if that's the real name.
 
 ## 7. Changelog
+- 2026-11-16 — Clickable menu with item pages. Website proxies `/api/*` to the backend so login works on Vercel.
 - 2026-11-15 — Admin products manager (add/edit/delete, photos, ingredients, allergens, prices). Seasonal Specials added from posters. `seed:menu` no longer overwrites admin edits.
 - 2026-11-14 — Restarted the project: single MongoDB backend, rebuilt frontend in the "fresh from home" vintage style; home, menu, visit, auth, account and admin placeholder done; menu seeded from the printed menus.

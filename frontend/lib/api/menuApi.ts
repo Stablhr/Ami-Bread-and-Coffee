@@ -41,3 +41,22 @@ export async function getMenu(): Promise<MenuResult> {
     return {ok: false};
   }
 }
+
+export type MenuItemDetail = MenuItem & {
+  category: {name: string; slug: string; note: string | null};
+};
+
+export type MenuItemResult = {ok: true; item: MenuItemDetail} | {ok: false; notFound: boolean};
+
+/** One product for its own page (/menu/[slug]). */
+export async function getMenuItem(slug: string): Promise<MenuItemResult> {
+  try {
+    const res = await fetch(`${serverApiBase()}/menu/items/${encodeURIComponent(slug)}`, {cache: 'no-store'});
+    if (res.status === 404) return {ok: false, notFound: true};
+    if (!res.ok) return {ok: false, notFound: false};
+    const data = (await res.json()) as {item: MenuItemDetail};
+    return {ok: true, item: data.item};
+  } catch {
+    return {ok: false, notFound: false};
+  }
+}
