@@ -69,6 +69,36 @@ The website still loads without the API, but the menu shows a friendly "menu is 
 
 Unsafe requests need the CSRF header from `GET /api/auth/csrf` (the frontend `httpClient` handles this).
 
+## Deploying to Vercel
+
+Two Vercel projects from this repo: **backend** (root directory `backend`) and **frontend** (root directory `frontend`).
+
+The browser only ever talks to the website. `frontend/proxy.ts` forwards `/api/*` to the backend, so login cookies are first-party (two different `*.vercel.app` sites are "cross-site", and Safari/iPhone would block the cookies otherwise).
+
+**Backend project → Settings → Environment Variables**
+
+| Name | Value |
+|---|---|
+| `NODE_ENV` | `production` |
+| `MONGO_URI`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `SMTP_*` | same as your local `.env` |
+| `COOKIE_SECURE` | `true` |
+| `COOKIE_SAMESITE` | `lax` |
+| `CORS_ORIGINS` | your website URL, e.g. `https://ami-bread.vercel.app` |
+| `PROXY_SECRET` | a long random string (same as frontend) |
+| `RATE_LIMIT_ENABLED` | `true` |
+
+MongoDB Atlas → Network Access must allow Vercel (`0.0.0.0/0`), because Vercel has no fixed IP.
+
+**Frontend project → Settings → Environment Variables**
+
+| Name | Value |
+|---|---|
+| `BACKEND_URL` | your backend URL, e.g. `https://ami-backend.vercel.app` (no `/api`) |
+| `PROXY_SECRET` | the same random string as the backend |
+| `NEXT_PUBLIC_API_URL` | **delete it** if it exists |
+
+Redeploy both projects after changing variables (Deployments → ⋯ → Redeploy).
+
 ## Scripts (repo root)
 
 | Command | What it does |

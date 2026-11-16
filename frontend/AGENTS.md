@@ -28,7 +28,9 @@ components/admin/   # Product form, photo upload field, ingredient tag list, del
 components/auth/    # Form bits (password checklist, messages), RequireRole guard, sign-out button
 components/ui/      # shadcn/ui primitives, restyled to the shop theme
 lib/api/            # httpClient (Axios, auth/CSRF/refresh), authApi, adminMenuApi, menuApi (server fetch, no-store)
-lib/images.ts       # resolveImageUrl(): "/api/images/<id>" -> backend URL, "/products/x.webp" -> frontend public
+lib/images.ts       # resolveImageUrl(): "/api/images/<id>" (via /api proxy), "/products/x.webp" (frontend public)
+proxy.ts            # Forwards /api/* to BACKEND_URL (first-party cookies on Vercel) + visitor IP for rate limits
+lib/api/config.ts   # PUBLIC_API_BASE ("/api" in the browser), serverApiBase() for Server Components
 lib/image-resize.ts # Shrinks photos in the browser before upload
 lib/shop.ts         # Shop name, address, hours, phone, Facebook, map links, peso formatting
 lib/hooks/          # React Query hooks (useMeQuery, useLogout)

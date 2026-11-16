@@ -5,6 +5,7 @@ import {ApiError} from '../utils/error';
 import {ErrorCodes} from '../constants/errorCodes';
 import {env} from '../config/env';
 import {ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE} from '../constants/cookies';
+import {getClientIp} from '../utils/clientIp';
 
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
@@ -15,7 +16,7 @@ const COOKIE_OPTIONS: CookieOptions = {
 
 function getSessionMeta(req: Request) {
   return {
-    ip: req.ip ?? null,
+    ip: getClientIp(req),
     userAgent: req.get('user-agent') ?? null
   };
 }

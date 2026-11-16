@@ -1,11 +1,13 @@
 import rateLimit from 'express-rate-limit';
 import type {RequestHandler} from 'express';
+import {getClientIp} from '../utils/clientIp';
 
 const enabled = process.env.RATE_LIMIT_ENABLED !== 'false';
 const noop: RequestHandler = (_req, _res, next) => next();
 
 function makeLimiter(opts: Parameters<typeof rateLimit>[0]): RequestHandler {
-  return enabled ? (rateLimit(opts) as RequestHandler) : noop;
+  // Count per visitor, not per Vercel proxy server (see utils/clientIp.ts).
+  return enabled ? (rateLimit({keyGenerator: getClientIp, ...opts}) as RequestHandler) : noop;
 }
 
 const rateLimitHandler: RequestHandler = (_req, res) => {

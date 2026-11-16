@@ -1,11 +1,12 @@
-import {API_BASE} from '@/lib/api/menuApi';
+import {PUBLIC_API_BASE} from '@/lib/api/config';
 
-/** Origin of the API, e.g. "http://localhost:5000" (API_BASE minus "/api"). */
-const API_ORIGIN = API_BASE.replace(/\/api$/, '');
+/** Set only when the API is called directly (absolute NEXT_PUBLIC_API_URL). */
+const API_ORIGIN = /^https?:\/\//i.test(PUBLIC_API_BASE) ? PUBLIC_API_BASE.replace(/\/api$/, '') : '';
 
 /**
  * Product photos come from two places:
- *  - "/api/images/<id>"  uploaded in Admin, served by the backend
+ *  - "/api/images/<id>"  uploaded in Admin, served by the backend (through
+ *                        the website's /api proxy, so the path works as-is)
  *  - "/products/<file>"  starter photos shipped in frontend/public
  */
 export function resolveImageUrl(url: string | null | undefined): string | null {
