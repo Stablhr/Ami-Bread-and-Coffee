@@ -4,20 +4,22 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useQueryClient} from '@tanstack/react-query';
-import {ArrowLeft, Store} from 'lucide-react';
+import {ArrowLeft, MapPin, Pencil, Phone, Store} from 'lucide-react';
+import {ProfileForm} from '@/components/account/profile-form';
 import {FormMessage} from '@/components/auth/form-bits';
 import {RequireRole} from '@/components/auth/require-role';
 import {SectionHeading} from '@/components/brand/section-heading';
 import {OrderSummary} from '@/components/cart/order-summary';
 import {Button, buttonVariants} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {Textarea} from '@/components/ui/textarea';
-import type {MeUser} from '@/lib/api/authApi';
+import {hasOrderingProfile, type MeUser} from '@/lib/api/authApi';
 import {getFriendlyErrorMessage} from '@/lib/api/getFriendlyErrorMessage';
 import {useCheckedCart} from '@/lib/cart/use-checked-cart';
-import {useMyOrders, usePlaceOrder} from '@/lib/hooks/orders/useOrders';
+import {usePlaceOrder} from '@/lib/hooks/orders/useOrders';
+import {formatAddress} from '@/lib/address';
+import {formatPhone} from '@/lib/orders';
 import {pickupDays, pickupSlots, timeLabel, toPickupIso} from '@/lib/pickup';
 import {formatPeso, SHOP} from '@/lib/shop';
 
@@ -25,25 +27,20 @@ export default function CheckoutPage() {
   return <RequireRole role="user">{user => <Checkout user={user} />}</RequireRole>;
 }
 
-const cleanPhone = (value: string) => value.replace(/[\s-]/g, '');
-const isPhMobile = (value: string) => /^(09\d{9}|\+639\d{9})$/.test(cleanPhone(value));
-
 function Checkout({user}: {user: MeUser}) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const {lines, orderable, totals, hasUnavailable, clear, menuLoading} = useCheckedCart();
-  const {data: mine} = useMyOrders();
   const place = usePlaceOrder();
 
   const [days] = useState(() => pickupDays());
-  const [phoneDraft, setPhoneDraft] = useState<string | null>(null);
   const [day, setDay] = useState(() => days[0]?.value ?? '');
   const [time, setTime] = useState('');
   const [notes, setNotes] = useState('');
-  const [errors, setErrors] = useState<{phone?: string; time?: string}>({});
+  const [errors, setErrors] = useState<{time?: string; profile?: string}>({});
+  const [editingProfile, setEditingProfile] = useState(false);
+  const profileComplete = hasOrderingProfile(user);
 
-  // Pre-fill the phone number from the customer's last order.
-  const phone = phoneDraft ?? mine?.lastPhone ?? '';
   const slots = day ? pickupSlots(day) : [];
   const chosenTime = slots.includes(time) ? time : '';
 
@@ -61,7 +58,7 @@ function Checkout({user}: {user: MeUser}) {
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
     const nextErrors: typeof errors = {};
-    if (!isPhMobile(phone)) nextErrors.phone = 'Enter your mobile number, e.g. 0917 123 4567.';
+    if (!profileComplete) nextErrors.profile = 'Add your mobile number and address first.';
     if (!day || !chosenTime) nextErrors.time = 'Choose when you will pick up your order.';
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0 || hasUnavailable) return;
@@ -69,7 +66,6 @@ function Checkout({user}: {user: MeUser}) {
     place.mutate(
       {
         items: orderable.map(line => ({menuItemId: line.menuItemId, quantity: line.quantity})),
-        phone: cleanPhone(phone),
         pickupAt: toPickupIso(day, chosenTime),
         notes: notes.trim()
       },
@@ -97,37 +93,60 @@ function Checkout({user}: {user: MeUser}) {
       </Link>
       <SectionHeading as="h1" kicker="last step" title="Checkout" className="mt-2" />
 
-      <form onSubmit={submit} noValidate className="mt-10 grid gap-8 lg:grid-cols-[1fr_22rem] lg:items-start">
+      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_22rem] lg:items-start">
         <div className="space-y-6">
           <section className="rounded-[1.75rem] border-2 border-ink bg-linen p-6">
-            <h2 className="text-2xl">Your details</h2>
-            <p className="mt-2 text-lg">
-              {user.firstName} {user.lastName}
-              <span className="block text-base text-ink-soft">{user.email}</span>
+            <h2 className="text-2xl">Contact and address</h2>
+            <p className="mt-1 text-ink-soft">
+              The shop uses these to confirm your order. They stay private to the shop.
             </p>
-            <div className="mt-5 space-y-2">
-              <Label htmlFor="phone">Mobile number</Label>
-              <Input
-                id="phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder="0917 123 4567"
-                value={phone}
-                onChange={e => {
-                  setPhoneDraft(e.target.value);
-                  setErrors(prev => ({...prev, phone: undefined}));
-                }}
-                aria-invalid={Boolean(errors.phone) || undefined}
-                aria-describedby="phone-hint"
-              />
-              <p id="phone-hint" className={errors.phone ? 'text-sm font-bold text-tomato' : 'text-sm text-ink-soft'}>
-                {errors.phone ?? 'We will text or call if there is a problem with your order.'}
-              </p>
-            </div>
+            {!profileComplete || editingProfile ? (
+              <div className="mt-5">
+                {!profileComplete && (
+                  <div className="mb-5">
+                    <FormMessage tone="error">
+                      {errors.profile ?? 'Please add your mobile number and address before ordering.'}
+                    </FormMessage>
+                  </div>
+                )}
+                <ProfileForm
+                  user={user}
+                  submitLabel="Save and continue"
+                  onSaved={() => {
+                    setEditingProfile(false);
+                    setErrors(prev => ({...prev, profile: undefined}));
+                  }}
+                  onCancel={profileComplete ? () => setEditingProfile(false) : undefined}
+                />
+              </div>
+            ) : (
+              <div className="mt-4 space-y-3 text-lg">
+                <p className="font-bold">
+                  {user.firstName} {user.lastName}
+                  <span className="block text-base font-normal text-ink-soft">{user.email}</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <Phone aria-hidden="true" className="mt-1 size-5 shrink-0 text-cocoa" />
+                  {formatPhone(user.phone ?? '')}
+                </p>
+                <p className="flex items-start gap-2">
+                  <MapPin aria-hidden="true" className="mt-1 size-5 shrink-0 text-cocoa" />
+                  <span>
+                    {formatAddress(user.address)}
+                    {user.address?.landmark && (
+                      <span className="block text-base text-ink-soft">Landmark: {user.address.landmark}</span>
+                    )}
+                  </span>
+                </p>
+                <Button type="button" variant="outline" size="sm" onClick={() => setEditingProfile(true)}>
+                  <Pencil aria-hidden="true" />
+                  Change
+                </Button>
+              </div>
+            )}
           </section>
 
-          <section className="rounded-[1.75rem] border-2 border-ink bg-linen p-6">
+          <form id="checkout-form" onSubmit={submit} noValidate className="rounded-[1.75rem] border-2 border-ink bg-linen p-6">
             <h2 className="text-2xl">Pickup</h2>
             <p className="mt-2 flex items-start gap-2 text-ink-soft">
               <Store aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-cocoa" />
@@ -185,7 +204,7 @@ function Checkout({user}: {user: MeUser}) {
                 onChange={e => setNotes(e.target.value)}
               />
             </div>
-          </section>
+          </form>
 
           <section className="rounded-[1.75rem] border-2 border-dashed border-ink/60 p-6">
             <h2 className="text-2xl">Payment</h2>
@@ -227,12 +246,12 @@ function Checkout({user}: {user: MeUser}) {
             </div>
           )}
 
-          <Button type="submit" size="lg" className="mt-6 w-full" disabled={place.isPending || hasUnavailable || menuLoading}>
+          <Button type="submit" form="checkout-form" size="lg" className="mt-6 w-full" disabled={place.isPending || hasUnavailable || menuLoading || !profileComplete || editingProfile}>
             {place.isPending ? 'Placing your order…' : `Place order · ${formatPeso(totals.total)}`}
           </Button>
           <p className="mt-3 text-sm text-ink-soft">The shop confirms the final total when you pick up.</p>
         </aside>
-      </form>
+      </div>
     </div>
   );
 }

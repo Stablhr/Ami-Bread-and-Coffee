@@ -1,5 +1,6 @@
 import {httpClient} from './httpClient';
 import type {MenuCategory} from './menuApi';
+import type {Address} from './authApi';
 
 export type OrderStatus = 'received' | 'preparing' | 'ready' | 'completed' | 'cancelled';
 
@@ -14,14 +15,13 @@ export type Order = {
   total: number;
   pickupAt: string;
   notes: string;
-  customer: {name: string; email: string; phone: string};
+  customer: {name: string; email: string; phone: string; address: Address | null};
   nextStatuses: OrderStatus[];
   createdAt: string;
 };
 
 export type NewOrder = {
   items: {menuItemId: string; quantity: number}[];
-  phone: string;
   /** ISO time with offset, e.g. 2026-11-18T09:30:00+08:00 */
   pickupAt: string;
   notes: string;
@@ -34,7 +34,7 @@ export async function placeOrder(input: NewOrder) {
 }
 
 export async function getMyOrders() {
-  const res = await httpClient.get<{orders: Order[]; lastPhone: string | null}>('/orders/mine');
+  const res = await httpClient.get<{orders: Order[]}>('/orders/mine');
   return res.data;
 }
 

@@ -21,6 +21,7 @@ type OrderLike = {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  customerAddress?: {street: string; barangay: string; city: string; province: string; landmark?: string} | null;
   createdAt: Date;
 };
 
@@ -42,7 +43,20 @@ export function toOrderView(order: OrderLike) {
     total: order.total,
     pickupAt: order.pickupAt,
     notes: order.notes ?? '',
-    customer: {name: order.customerName, email: order.customerEmail, phone: order.customerPhone},
+    customer: {
+      name: order.customerName,
+      email: order.customerEmail,
+      phone: order.customerPhone,
+      address: order.customerAddress
+        ? {
+            street: order.customerAddress.street,
+            barangay: order.customerAddress.barangay,
+            city: order.customerAddress.city,
+            province: order.customerAddress.province,
+            landmark: order.customerAddress.landmark ?? ''
+          }
+        : null
+    },
     nextStatuses: NEXT_STATUSES[order.status],
     createdAt: order.createdAt
   };
@@ -64,6 +78,10 @@ export const orderService = {
 
     const customer = await userRepository.findById(customerId);
     if (!customer) throw new ApiError(401, ErrorCodes.UNAUTHORIZED, 'Please sign in again');
+    // Shop safety: only customers with a mobile number and address can order.
+    if (!customer.phone || !customer.address?.street || !customer.address.barangay || !customer.address.city) {
+      throw new ApiError(400, ErrorCodes.PROFILE_INCOMPLETE, 'Add your mobile number and address before ordering');
+    }
 
     // Merge duplicate lines, then look up the real prices (never trust the browser's).
     const quantities = new Map<string, number>();
@@ -104,7 +122,14 @@ export const orderService = {
       customer: customer._id,
       customerName: `${customer.firstName} ${customer.lastName}`.trim(),
       customerEmail: customer.email,
-      customerPhone: dto.phone,
+      customerPhone: customer.phone,
+      customerAddress: {
+        street: customer.address.street,
+        barangay: customer.address.barangay,
+        city: customer.address.city,
+        province: customer.address.province,
+        landmark: customer.address.landmark ?? ''
+      },
       items: lines.map(line => ({
         menuItem: line.id as never,
         name: line.name,
@@ -129,12 +154,6 @@ export const orderService = {
   async listMine(customerId: string) {
     const orders = await orderRepository.listForCustomer(customerId);
     return orders.map(toOrderView);
-  },
-
-  /** The phone number from the customer's last order, to pre-fill checkout. */
-  async lastPhone(customerId: string) {
-    const latest = await orderRepository.latestForCustomer(customerId);
-    return latest?.customerPhone ?? null;
   },
 
   async getMine(customerId: string, orderId: string) {

@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import {ChevronRight, ClipboardList, Mail, UserRound} from 'lucide-react';
+import {ChevronRight, ClipboardList} from 'lucide-react';
 import {RequireRole} from '@/components/auth/require-role';
-import {SignOutButton} from '@/components/auth/sign-out-button';
-import {Asterisk, Heart} from '@/components/brand/doodles';
+import {AccountDetails} from '@/components/account/account-details';
+import {Heart} from '@/components/brand/doodles';
 import {SectionHeading} from '@/components/brand/section-heading';
 import {StatusBadge} from '@/components/orders/status-badge';
 import {buttonVariants} from '@/components/ui/button';
@@ -25,23 +25,7 @@ export default function AccountPage() {
           />
 
           <div className="mt-10 grid gap-6 md:grid-cols-[1fr_1.4fr]">
-            <section aria-labelledby="profile-heading" className="relative self-start rounded-[1.75rem] border-[3px] border-ink bg-linen p-6">
-              <Asterisk className="absolute right-5 top-5 size-7 text-ink/60" />
-              <h2 id="profile-heading" className="text-2xl">Your details</h2>
-              <dl className="mt-4 space-y-3 text-lg">
-                <div className="flex items-center gap-3">
-                  <dt><UserRound aria-hidden="true" className="size-5 text-cocoa" /><span className="sr-only">Name</span></dt>
-                  <dd>{user.firstName} {user.lastName}</dd>
-                </div>
-                <div className="flex items-center gap-3">
-                  <dt><Mail aria-hidden="true" className="size-5 text-cocoa" /><span className="sr-only">Email</span></dt>
-                  <dd className="break-all">{user.email}</dd>
-                </div>
-              </dl>
-              <div className="mt-6">
-                <SignOutButton />
-              </div>
-            </section>
+            <AccountDetails user={user} />
 
             <YourOrders />
           </div>

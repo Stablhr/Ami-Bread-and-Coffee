@@ -64,6 +64,11 @@ function subscribe(listener: () => void) {
   };
 }
 
+/** Empties the cart (used on sign-out so the next person on this device starts fresh). */
+export function clearCart() {
+  write([]);
+}
+
 const clamp = (quantity: number) => Math.max(0, Math.min(MAX_PER_ITEM, Math.floor(quantity)));
 
 export function useCart() {

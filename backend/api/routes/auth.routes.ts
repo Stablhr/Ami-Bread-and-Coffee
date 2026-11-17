@@ -10,14 +10,15 @@ import {
   forgotPasswordDto,
   resetPasswordDto,
   resendResetCodeDto,
-  changePasswordDto
+  changePasswordDto,
+  updateProfileDto
 } from '../dtos/auth.dto';
 import {
   authLimiter,
   authActionLimiter,
   authReadLimiter
 } from '../middleware/rateLimit';
-import {requireAuth} from '../middleware/auth';
+import {requireAuth, requireCustomer} from '../middleware/auth';
 import {issueCsrfToken} from '../middleware/csrf';
 
 const router = Router();
@@ -75,6 +76,14 @@ router.put(
   requireAuth,
   validate(changePasswordDto),
   authController.changePassword
+);
+router.put(
+  '/profile',
+  authActionLimiter,
+  requireAuth,
+  requireCustomer,
+  validate(updateProfileDto),
+  authController.updateProfile
 );
 router.get('/csrf', authActionLimiter, issueCsrfToken);
 

@@ -5,6 +5,7 @@ import {MenuCategoryBlock} from '@/components/menu/menu-category-block';
 import {MenuUnavailable} from '@/components/menu/menu-unavailable';
 import {SamplerBoxCard} from '@/components/menu/sampler-box-card';
 import {SpecialsShelf} from '@/components/menu/specials-shelf';
+import {GuestOrderNotice} from '@/components/cart/guest-order-notice';
 import {getMenu, type MenuCategory} from '@/lib/api/menuApi';
 import {SHOP} from '@/lib/shop';
 
@@ -76,6 +77,7 @@ function MenuSheets({categories}: {categories: MenuCategory[]}) {
       </nav>
 
       <p className="mt-4 text-center text-ink-soft">Tap any item to see its photo, ingredients and allergens.</p>
+      <GuestOrderNotice className="mt-4" />
 
       <div className="space-y-12 py-10 md:py-14">
         {specials && specials.items.length > 0 && (

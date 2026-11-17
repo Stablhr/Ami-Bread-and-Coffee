@@ -14,12 +14,9 @@ export const orderController = {
 
   async listMine(req: Request, res: Response, next: NextFunction) {
     try {
-      const [orders, lastPhone] = await Promise.all([
-        orderService.listMine(req.auth!.userId),
-        orderService.lastPhone(req.auth!.userId)
-      ]);
+      const orders = await orderService.listMine(req.auth!.userId);
       res.set('Cache-Control', 'no-store');
-      res.status(200).json({orders, lastPhone});
+      res.status(200).json({orders});
     } catch (error) {
       next(error);
     }

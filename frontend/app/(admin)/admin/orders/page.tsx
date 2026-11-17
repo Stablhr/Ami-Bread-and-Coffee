@@ -1,7 +1,7 @@
 'use client';
 
 import {useMemo, useState} from 'react';
-import {Clock, Mail, MessageSquareText, Phone, RefreshCw} from 'lucide-react';
+import {Clock, Mail, MapPin, MessageSquareText, Phone, RefreshCw} from 'lucide-react';
 import {FormMessage} from '@/components/auth/form-bits';
 import {PageLoading} from '@/components/layout/page-loading';
 import {StatusBadge} from '@/components/orders/status-badge';
@@ -19,6 +19,7 @@ import type {AdminOrderFilter, Order, OrderStatus} from '@/lib/api/ordersApi';
 import {getFriendlyErrorMessage} from '@/lib/api/getFriendlyErrorMessage';
 import {useAdminOrders, useUpdateOrderStatus} from '@/lib/hooks/orders/useOrders';
 import {formatPhone, STATUS_ACTION} from '@/lib/orders';
+import {formatAddress} from '@/lib/address';
 import {formatPickup, formatPlacedAt} from '@/lib/pickup';
 import {formatPeso} from '@/lib/shop';
 import {cn} from '@/lib/utils';
@@ -208,6 +209,19 @@ function OrderCard({order, busy, onMove}: {order: Order; busy: boolean; onMove: 
             {order.customer.email}
           </a>
         </p>
+        {order.customer.address ? (
+          <p className="mt-2 flex items-start gap-1.5 text-ink">
+            <MapPin aria-hidden="true" className="mt-1 size-4 shrink-0 text-cocoa" />
+            <span>
+              {formatAddress(order.customer.address)}
+              {order.customer.address.landmark && (
+                <span className="block text-sm text-ink-soft">Landmark: {order.customer.address.landmark}</span>
+              )}
+            </span>
+          </p>
+        ) : (
+          <p className="mt-2 text-sm text-ink-soft">No address on file (order placed before addresses were required).</p>
+        )}
       </div>
 
       <ul className="mt-4 space-y-1 border-t-2 border-dashed border-ink/20 pt-3">

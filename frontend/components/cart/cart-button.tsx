@@ -3,11 +3,14 @@
 import Link from 'next/link';
 import {ShoppingBasket} from 'lucide-react';
 import {useCart} from '@/lib/cart/cart-store';
+import {useIsCustomer} from '@/lib/hooks/auth/useIsCustomer';
 import {cn} from '@/lib/utils';
 
 /** Header basket with a count badge. */
 export function CartButton({className}: {className?: string}) {
   const {count} = useCart();
+  const {isCustomer} = useIsCustomer();
+  if (!isCustomer) return null;
   return (
     <Link
       href="/cart"

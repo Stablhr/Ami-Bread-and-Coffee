@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import {randomUUID} from 'crypto';
 import {env} from '../config/env';
 import {userRepository} from '../repositories/user.repository';
+import type {UserAddress} from '../models/User.model';
 import {adminRepository} from '../repositories/admin.repository';
 import {refreshSessionRepository} from '../repositories/refreshSession.repository';
 import {ApiError} from '../utils/error';
@@ -84,16 +85,37 @@ function isWithinGraceWindow(rotatedAt: Date) {
 export const authService = {
   /** Public profile fields for the signed-in account (used by GET /auth/me). */
   async getProfile(userId: string, type: 'user' | 'admin') {
-    const repository = type === 'admin' ? adminRepository : userRepository;
-    const account = await repository.findById(userId);
-    if (!account) {
-      throw new ApiError(401, ErrorCodes.UNAUTHORIZED, 'Account not found');
+    if (type === 'admin') {
+      const admin = await adminRepository.findById(userId);
+      if (!admin) throw new ApiError(401, ErrorCodes.UNAUTHORIZED, 'Account not found');
+      return {firstName: admin.firstName, lastName: admin.lastName, email: admin.email, phone: null, address: null};
     }
+    const user = await userRepository.findById(userId);
+    if (!user) throw new ApiError(401, ErrorCodes.UNAUTHORIZED, 'Account not found');
+    const address = user.address
+      ? {
+          street: user.address.street,
+          barangay: user.address.barangay,
+          city: user.address.city,
+          province: user.address.province,
+          landmark: user.address.landmark ?? ''
+        }
+      : null;
     return {
-      firstName: account.firstName,
-      lastName: account.lastName,
-      email: account.email
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone ?? null,
+      address
     };
+  },
+
+  async updateProfile(
+    userId: string,
+    data: {firstName: string; lastName: string; phone: string; address: UserAddress}
+  ) {
+    await userRepository.updateContact(userId, data);
+    return this.getProfile(userId, 'user');
   },
 
   async register(data: {
@@ -102,6 +124,8 @@ export const authService = {
     email: string;
     password: string;
     username?: string;
+    phone: string;
+    address: UserAddress;
   }) {
     const [existingEmail] = await Promise.all([
       userRepository.findByEmail(data.email)
@@ -122,6 +146,8 @@ export const authService = {
         email: data.email,
         passwordHash,
         username: data.username,
+        phone: data.phone,
+        address: data.address,
         verificationCode,
         verificationExpiry,
         isVerified: false

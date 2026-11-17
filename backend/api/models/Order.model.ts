@@ -21,12 +21,22 @@ export interface OrderLine {
   lineTotal: number;
 }
 
+export interface OrderAddress {
+  street: string;
+  barangay: string;
+  city: string;
+  province: string;
+  landmark: string;
+}
+
 export interface OrderDocument extends mongoose.Document {
   orderNumber: string;
   customer: Types.ObjectId;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  /** Snapshot of the customer's address when they ordered. */
+  customerAddress?: OrderAddress | null;
   items: OrderLine[];
   /** Sum of unitPrice × quantity, in whole pesos. */
   subtotal: number;
@@ -61,6 +71,13 @@ const OrderSchema = new Schema<OrderDocument>(
     customerName: {type: String, required: true},
     customerEmail: {type: String, required: true},
     customerPhone: {type: String, required: true},
+    customerAddress: {
+      type: new Schema<OrderAddress>(
+        {street: String, barangay: String, city: String, province: String, landmark: {type: String, default: ''}},
+        {_id: false}
+      ),
+      default: null
+    },
     items: {type: [OrderLineSchema], required: true},
     subtotal: {type: Number, required: true, min: 0},
     discount: {type: Number, required: true, min: 0, default: 0},

@@ -27,9 +27,6 @@ export const orderRepository = {
   listForCustomer: (customerId: string) =>
     OrderModel.find({customer: new Types.ObjectId(customerId)}).sort({createdAt: -1}).limit(50).lean().exec(),
 
-  latestForCustomer: (customerId: string) =>
-    OrderModel.findOne({customer: new Types.ObjectId(customerId)}).sort({createdAt: -1}).select('customerPhone').lean().exec(),
-
   list: (statuses: OrderStatus[] | null, limit = 100) =>
     OrderModel.find(statuses ? {status: {$in: statuses}} : {})
       .sort({createdAt: -1})

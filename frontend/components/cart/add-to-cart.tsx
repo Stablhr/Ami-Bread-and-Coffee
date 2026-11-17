@@ -2,11 +2,13 @@
 
 import {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
-import {Check, Plus, ShoppingBasket} from 'lucide-react';
-import {Button} from '@/components/ui/button';
+import {usePathname} from 'next/navigation';
+import {Check, LogIn, Plus, ShoppingBasket, UserPlus} from 'lucide-react';
+import {Button, buttonVariants} from '@/components/ui/button';
 import {QuantityStepper} from './quantity-stepper';
 import type {MenuItem} from '@/lib/api/menuApi';
 import {MAX_PER_ITEM, useCart} from '@/lib/cart/cart-store';
+import {useIsCustomer} from '@/lib/hooks/auth/useIsCustomer';
 import {cn} from '@/lib/utils';
 
 function toCartLine(item: MenuItem, categoryKey: string) {
@@ -36,6 +38,35 @@ function useJustAdded() {
 
 /** Item page: pick a quantity, then add. */
 export function AddToCart({item, categoryKey}: {item: MenuItem; categoryKey: string}) {
+  const {isCustomer, isAdmin, isPending} = useIsCustomer();
+  if (isPending) return <div className="h-24" aria-hidden="true" />;
+  if (isAdmin) return <p className="text-ink-soft">You are signed in as admin. Customers order from their own accounts.</p>;
+  if (!isCustomer) return <SignInToOrder />;
+  return <CustomerAddToCart item={item} categoryKey={categoryKey} />;
+}
+
+/** Guests can look but not order: point them to sign in / sign up. */
+export function SignInToOrder() {
+  const pathname = usePathname();
+  const next = encodeURIComponent(pathname);
+  return (
+    <div className="space-y-3">
+      <p className="font-bold text-ink">Only registered customers can order online.</p>
+      <div className="flex flex-wrap gap-3">
+        <Link href={`/sign-in?next=${next}`} className={buttonVariants()}>
+          <LogIn aria-hidden="true" />
+          Sign in to order
+        </Link>
+        <Link href={`/sign-up?next=${next}`} className={buttonVariants({variant: 'outline'})}>
+          <UserPlus aria-hidden="true" />
+          Create an account
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function CustomerAddToCart({item, categoryKey}: {item: MenuItem; categoryKey: string}) {
   const {add, lines} = useCart();
   const [quantity, setQuantity] = useState(1);
   const {justAdded, flash} = useJustAdded();
@@ -86,6 +117,10 @@ export function AddToCart({item, categoryKey}: {item: MenuItem; categoryKey: str
 export function QuickAdd({item, categoryKey, className}: {item: MenuItem; categoryKey: string; className?: string}) {
   const {add} = useCart();
   const {justAdded, flash} = useJustAdded();
+  const {isCustomer} = useIsCustomer();
+
+  // Guests and the admin account only browse.
+  if (!isCustomer) return null;
 
   if (!item.isAvailable) return <span className={cn('size-11 shrink-0', className)} aria-hidden="true" />;
 

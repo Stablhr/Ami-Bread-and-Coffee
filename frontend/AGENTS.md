@@ -27,7 +27,8 @@ components/brand/   # Logo, "ami" wordmark, doodles (asterisk, heart, wavy rule)
 components/layout/  # Site header/footer, open-now status, page loading
 components/menu/    # Printed-menu pieces: clickable item row, category block, sampler box, specials shelf, product photo
 components/admin/   # Product form, photo upload field, ingredient tag list, delete dialog, product photo
-components/cart/    # Cart button, add-to-cart / quick add, quantity stepper, order summary
+components/cart/    # Cart button, add-to-cart / quick add (customers only), guest notice, quantity stepper, order summary
+components/account/ # Contact fields (mobile + address), profile form, account details card
 components/orders/  # Status badge + timeline
 lib/cart/           # Cart store (localStorage), pricing (mirrors backend/api/utils/pricing.ts), live-menu check
 lib/pickup.ts       # Manila pickup days/slots (mirrors backend/api/utils/pickupTime.ts)
@@ -72,7 +73,7 @@ The `getFriendlyErrorMessage()` function maps error codes to user-friendly messa
 
 ## Route Groups
 
-- `(public)` — No auth required, except `/account`, which is wrapped in `<RequireRole role="user">`.
+- `(public)` — Browsing needs no account. `/cart`, `/checkout`, `/orders/[id]`, `/account` are wrapped in `<RequireRole role="user">`. Guests and the admin never see cart buttons (`useIsCustomer()`); only registered customers can order.
 - `(auth)` — Auth forms. Signed-in visitors are redirected to their home (`getHomePathFor`).
 - `(admin)` — Requires an admin account; customers go to `/account`, guests to `/sign-in`.
 

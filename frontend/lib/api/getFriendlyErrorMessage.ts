@@ -73,6 +73,8 @@ export function getFriendlyErrorMessage(
         return 'Network error. Please check your connection and try again.';
       case 'SERVER_UNAVAILABLE':
         return "We can't reach the shop's server right now. Please try again in a few minutes.";
+      case 'PROFILE_INCOMPLETE':
+        return 'Please add your mobile number and address before ordering.';
       case 'ITEM_UNAVAILABLE':
         return 'Something in your cart just sold out. Please check your cart and try again.';
       case 'INVALID_PICKUP_TIME':

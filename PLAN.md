@@ -18,8 +18,8 @@ Shop details live in `frontend/lib/shop.ts`.
 
 | User | What they can do |
 |---|---|
-| **Guest** (not signed in) | Browse home, menu, visit page. Sees "Create account / Sign in". |
-| **Customer** (registered, email + password) | Everything a guest can, plus their account page. Later: cart, pre-order, track and review orders. |
+| **Guest** (not signed in) | Browse home, menu, item pages, visit page. **Cannot order**: no cart buttons; sees "Sign in to order / Create an account". |
+| **Customer** (registered, email + password, **mobile number + address required**) | Cart, pickup checkout, order tracking, edit details on `/account`. Phone and address are saved on every order so the shop can verify real customers (anti-scam). |
 | **Admin** (one shared account for the owner and the cashier) | Admin dashboard. Later: orders (who ordered what), menu manager, shop settings. |
 
 ## 3. Stack
@@ -98,6 +98,7 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 7. "Espresso" loaf is "Espresso Choco" on the poster; rename in Admin if that's the real name.
 
 ## 7. Changelog
+- 2026-11-17 — Guests can only browse; registered customers must have mobile number + address (sign-up, `/account`, checkout); address saved on orders and shown in Admin.
 - 2026-11-17 — Cart, checkout (pickup, pay at counter), customer order pages, admin Orders dashboard.
 - 2026-11-16 — Clickable menu with item pages. Website proxies `/api/*` to the backend so login works on Vercel.
 - 2026-11-15 — Admin products manager (add/edit/delete, photos, ingredients, allergens, prices). Seasonal Specials added from posters. `seed:menu` no longer overwrites admin edits.

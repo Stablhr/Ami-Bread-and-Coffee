@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {ArrowRight, ShoppingBasket, Trash2} from 'lucide-react';
+import {RequireRole} from '@/components/auth/require-role';
 import {OrderSummary} from '@/components/cart/order-summary';
 import {QuantityStepper} from '@/components/cart/quantity-stepper';
 import {SectionHeading} from '@/components/brand/section-heading';
@@ -13,6 +14,10 @@ import {formatPeso} from '@/lib/shop';
 import {cn} from '@/lib/utils';
 
 export default function CartPage() {
+  return <RequireRole role="user">{() => <Cart />}</RequireRole>;
+}
+
+function Cart() {
   const {lines, setQuantity, remove, totals, hasUnavailable, count} = useCheckedCart();
 
   return (

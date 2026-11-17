@@ -49,7 +49,7 @@ The website still loads without the API, but the menu shows a friendly "menu is 
 | Who | How |
 |---|---|
 | Guest | No account. Can browse home, menu and visit page. |
-| Customer | Sign up at `/sign-up` with email + password, confirm the 6-digit email code, then sign in. Lands on `/account`. |
+| Customer | Sign up at `/sign-up` with email, password, **mobile number and address**, confirm the 6-digit email code, then sign in. Only customers can order. |
 | Admin (owner + cashier) | One shared account created by `npm run seed:admin` from `SEED_ADMIN_*` in `backend/.env`. Lands on `/admin`. |
 
 ## API
@@ -61,10 +61,11 @@ The website still loads without the API, but the menu shows a friendly "menu is 
 | GET | `/api/images/:id` | Uploaded product photo |
 | GET / POST / PATCH / DELETE | `/api/admin/menu`, `/api/admin/menu/items[/:id]` | Admin only: list, add, edit, delete products |
 | POST | `/api/admin/uploads/image` | Admin only: upload a product photo (field `image`) |
-| POST | `/api/orders` | Customer: place a pickup order `{items:[{menuItemId,quantity}], phone, pickupAt, notes}` |
+| POST | `/api/orders` | Customer with phone + address on file: place a pickup order `{items:[{menuItemId,quantity}], pickupAt, notes}` |
 | GET | `/api/orders/mine`, `/api/orders/:id` | Customer: their orders |
 | GET / PATCH | `/api/admin/orders?status=…`, `/api/admin/orders/:id/status` | Admin: list orders, change status |
-| POST | `/api/auth/register` | firstName, lastName, email, password |
+| POST | `/api/auth/register` | firstName, lastName, email, password, phone, address `{street, barangay, city, province, landmark}` |
+| PUT | `/api/auth/profile` | Customer: update name, phone, address |
 | POST | `/api/auth/verify` | email + 6-digit code |
 | POST | `/api/auth/login` | sets HTTP-only cookies |
 | GET | `/api/auth/me` | id, type (`user`/`admin`), firstName, lastName, email |

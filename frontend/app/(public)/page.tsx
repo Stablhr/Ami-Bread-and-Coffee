@@ -200,15 +200,15 @@ function SamplerFeature({price, href}: {price?: number; href?: string}) {
 function HowItWorks() {
   const steps = [
     {title: 'Browse the menu', body: 'Breads, scones, toast, focaccia, pasta, snacks and drinks, with prices.'},
-    {title: 'Create your account', body: 'Sign up with your email so we know who your order is for.'},
-    {title: 'Pre-order online', body: 'Pick your items and a pickup time. We are still building this part.', soon: true}
+    {title: 'Create your account', body: 'Sign up with your email, mobile number and address. Only registered customers can order.'},
+    {title: 'Pre-order for pickup', body: 'Add items to your cart, choose a pickup time, and pay when you collect.'}
   ];
   return (
     <section aria-labelledby="how-heading" className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-20">
       <SectionHeading
         id="how-heading"
         kicker="good things take time"
-        title="How ordering will work"
+        title="How ordering works"
         align="center"
       />
       <ol className="mt-12 grid gap-6 md:grid-cols-3">
@@ -222,11 +222,6 @@ function HowItWorks() {
             </span>
             <h3 className="font-hand text-2xl text-ink">
               {step.title}
-              {step.soon && (
-                <span className="ml-2 inline-block -translate-y-0.5 rounded-full border-2 border-cocoa px-2 font-sans text-xs font-extrabold tracking-wider text-cocoa uppercase">
-                  Coming soon
-                </span>
-              )}
             </h3>
             <p className="mt-2 text-ink-soft">{step.body}</p>
           </li>
@@ -236,9 +231,9 @@ function HowItWorks() {
         <Link href="/sign-up" className={buttonVariants({size: 'lg'})}>
           Create an account
         </Link>
-        <a href={SHOP.facebookUrl} target="_blank" rel="noreferrer" className={buttonVariants({variant: 'outline', size: 'lg'})}>
-          Order through Facebook for now
-        </a>
+        <Link href="/menu" className={buttonVariants({variant: 'outline', size: 'lg'})}>
+          See the menu
+        </Link>
       </div>
     </section>
   );
