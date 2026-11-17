@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {ChevronRight} from 'lucide-react';
 import {Heart} from '@/components/brand/doodles';
+import {QuickAdd} from '@/components/cart/add-to-cart';
 import type {MenuItem} from '@/lib/api/menuApi';
 import {isUploadedImage, resolveImageUrl} from '@/lib/images';
 import {formatPeso} from '@/lib/shop';
@@ -11,14 +12,14 @@ import {cn} from '@/lib/utils';
  * One line of the printed menu: name ········ price.
  * The whole line opens the item's page (photo, ingredients, allergens).
  */
-export function MenuItemRow({item}: {item: MenuItem}) {
+export function MenuItemRow({item, categoryKey}: {item: MenuItem; categoryKey: string}) {
   const photo = resolveImageUrl(item.imageUrl);
 
   return (
-    <li className={cn(!item.isAvailable && 'opacity-60')}>
+    <li className={cn('flex items-center gap-2', !item.isAvailable && 'opacity-60')}>
       <Link
         href={`/menu/${item.slug}`}
-        className="group -mx-2 flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-paper-deep/70"
+        className="group -ml-2 flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-paper-deep/70"
       >
         {photo && (
           <span className="relative size-11 shrink-0 overflow-hidden rounded-full border-2 border-ink/70 bg-paper-deep">
@@ -57,6 +58,7 @@ export function MenuItemRow({item}: {item: MenuItem}) {
         </span>
         <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-ink/40 group-hover:text-cocoa" />
       </Link>
+      <QuickAdd item={item} categoryKey={categoryKey} />
     </li>
   );
 }

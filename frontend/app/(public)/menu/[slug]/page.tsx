@@ -2,13 +2,13 @@ import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
-import {ArrowLeft, MessageCircle, Phone, TriangleAlert} from 'lucide-react';
+import {ArrowLeft, TriangleAlert} from 'lucide-react';
 import {BrushTag} from '@/components/brand/brush-tag';
 import {Asterisk, Heart, InkUnderline} from '@/components/brand/doodles';
 import {LogoGirl} from '@/components/brand/logo';
 import {MenuUnavailable} from '@/components/menu/menu-unavailable';
 import {ProductPhoto} from '@/components/menu/product-photo';
-import {buttonVariants} from '@/components/ui/button';
+import {AddToCart} from '@/components/cart/add-to-cart';
 import {getMenu, getMenuItem, type MenuItemDetail} from '@/lib/api/menuApi';
 import {isUploadedImage, resolveImageUrl} from '@/lib/images';
 import {formatPeso, SHOP} from '@/lib/shop';
@@ -120,21 +120,21 @@ export default async function MenuItemPage({params}: PageProps) {
             </p>
           </section>
 
-          <div className="mt-8 rounded-2xl border-2 border-dashed border-ink/50 p-5">
-            <p className="font-hand text-2xl text-ink">Want this one?</p>
-            <p className="mt-1 text-ink-soft">
-              Online ordering is coming soon. For now, message us on Facebook or give us a call.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <a href={SHOP.facebookUrl} target="_blank" rel="noreferrer" className={buttonVariants()}>
-                <MessageCircle aria-hidden="true" />
+          <div className="mt-8 rounded-2xl border-2 border-ink/80 bg-linen p-5">
+            <p className="font-hand text-2xl text-ink">Pre-order for pickup</p>
+            <p className="mb-4 mt-1 text-ink-soft">Add it to your cart, then choose a pickup time at checkout.</p>
+            <AddToCart item={item} categoryKey={item.category.slug} />
+            <p className="mt-4 text-sm text-ink-soft">
+              Questions?{' '}
+              <a href={SHOP.facebookUrl} target="_blank" rel="noreferrer" className="font-bold text-cocoa underline underline-offset-4">
                 Message us
+              </a>{' '}
+              or call{' '}
+              <a href={SHOP.phoneHref} className="font-bold text-cocoa underline underline-offset-4">
+                {SHOP.phoneDisplay}
               </a>
-              <a href={SHOP.phoneHref} className={buttonVariants({variant: 'outline'})}>
-                <Phone aria-hidden="true" />
-                Call {SHOP.phoneDisplay}
-              </a>
-            </div>
+              .
+            </p>
           </div>
         </div>
       </article>

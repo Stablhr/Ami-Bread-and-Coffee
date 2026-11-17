@@ -77,10 +77,11 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 - [ ] Shop settings: open/closed switch, hours, contact.
 
 ### Step 5 — Ordering
-- [ ] Cart (guests are asked to sign in before checkout).
-- [ ] Checkout: pickup or delivery, date/time, notes.
-- [ ] Customer order history + status tracker (received → baking → ready → on the way → completed / cancelled).
-- [ ] Admin orders dashboard: list, who ordered, items, totals, status buttons, auto-refresh.
+- [x] Cart (saved in the browser; guests can fill it, sign-in required at checkout; bundle deals applied).
+- [x] Checkout: pickup only, phone, pickup day/time (7:30 AM–8:30 PM, ≥30 min ahead, ≤7 days), notes, pay at pickup. Backend re-prices from the live menu.
+- [ ] Delivery (needs areas and fees from the owner).
+- [x] Customer order page (`/orders/[id]`, refreshes every 30 s) and order list on `/account`. Statuses: received → preparing → ready → picked up / cancelled.
+- [x] Admin orders (`/admin/orders`): to-do / picked up / cancelled tabs, customer name/phone/email, items, total, pickup time, notes, status buttons, cancel with confirm, auto-refresh every 15 s.
 - [ ] Email notifications for "order received" and "ready".
 
 ### Step 6 — Payments (later)
@@ -97,6 +98,7 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 7. "Espresso" loaf is "Espresso Choco" on the poster; rename in Admin if that's the real name.
 
 ## 7. Changelog
+- 2026-11-17 — Cart, checkout (pickup, pay at counter), customer order pages, admin Orders dashboard.
 - 2026-11-16 — Clickable menu with item pages. Website proxies `/api/*` to the backend so login works on Vercel.
 - 2026-11-15 — Admin products manager (add/edit/delete, photos, ingredients, allergens, prices). Seasonal Specials added from posters. `seed:menu` no longer overwrites admin edits.
 - 2026-11-14 — Restarted the project: single MongoDB backend, rebuilt frontend in the "fresh from home" vintage style; home, menu, visit, auth, account and admin placeholder done; menu seeded from the printed menus.

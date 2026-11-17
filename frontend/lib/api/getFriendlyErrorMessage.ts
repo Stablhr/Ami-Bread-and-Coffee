@@ -73,6 +73,12 @@ export function getFriendlyErrorMessage(
         return 'Network error. Please check your connection and try again.';
       case 'SERVER_UNAVAILABLE':
         return "We can't reach the shop's server right now. Please try again in a few minutes.";
+      case 'ITEM_UNAVAILABLE':
+        return 'Something in your cart just sold out. Please check your cart and try again.';
+      case 'INVALID_PICKUP_TIME':
+        return 'That pickup time is no longer available. Please choose another time.';
+      case 'INVALID_STATUS_CHANGE':
+        return 'This order was just updated. The list has been refreshed, please try again.';
       case 'INVALID_IMAGE':
         return 'That file is not a photo we can use. Please choose a JPG, PNG or WebP image.';
       case 'IMAGE_TOO_LARGE':

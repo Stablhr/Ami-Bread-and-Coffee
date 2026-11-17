@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect} from 'react';
-import {useRouter} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import type {MeUser} from '@/lib/api/authApi';
 import {isAuthError} from '@/lib/api/isAuthError';
 import {getHomePathFor, type UserType} from '@/lib/auth/redirects';
@@ -20,14 +20,16 @@ export function RequireRole({
   children: (user: MeUser) => React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const {data, isPending, isError, error} = useMeQuery();
   const signedOut = isError && isAuthError(error);
   const wrongRole = data && data.user.type !== role;
 
   useEffect(() => {
-    if (signedOut) router.replace('/sign-in');
+    // Come back to this page after signing in (e.g. checkout).
+    if (signedOut) router.replace(`/sign-in?next=${encodeURIComponent(pathname)}`);
     else if (data && data.user.type !== role) router.replace(getHomePathFor(data.user.type));
-  }, [data, role, router, signedOut]);
+  }, [data, pathname, role, router, signedOut]);
 
   if (isPending || signedOut || wrongRole) return <PageLoading />;
 

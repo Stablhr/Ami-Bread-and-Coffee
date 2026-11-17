@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import {Heart} from '@/components/brand/doodles';
+import {QuickAdd} from '@/components/cart/add-to-cart';
 import {ProductPhoto} from './product-photo';
 import type {MenuItem} from '@/lib/api/menuApi';
 import {formatPeso} from '@/lib/shop';
@@ -9,11 +10,19 @@ import {cn} from '@/lib/utils';
  * Photo cards for limited-time drinks and bakes, like the shop's posters.
  * Each card opens the item's page.
  */
-export function SpecialsShelf({items, className}: {items: MenuItem[]; className?: string}) {
+export function SpecialsShelf({
+  items,
+  categoryKey = 'seasonal-specials',
+  className
+}: {
+  items: MenuItem[];
+  categoryKey?: string;
+  className?: string;
+}) {
   return (
     <ul className={cn('grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-4', className)}>
       {items.map((item, index) => (
-        <li key={item.id} className={index % 2 === 0 ? 'rotate-[-0.8deg]' : 'rotate-[0.8deg]'}>
+        <li key={item.id} className={cn('relative', index % 2 === 0 ? 'rotate-[-0.8deg]' : 'rotate-[0.8deg]')}>
           <Link
             href={`/menu/${item.slug}`}
             className={cn(
@@ -36,6 +45,7 @@ export function SpecialsShelf({items, className}: {items: MenuItem[]; className?
               {!item.isAvailable && <span className="ml-2 font-sans text-sm font-bold text-tomato">Sold out</span>}
             </p>
           </Link>
+          <QuickAdd item={item} categoryKey={categoryKey} className="absolute bottom-4 right-3 shadow-sm" />
         </li>
       ))}
     </ul>

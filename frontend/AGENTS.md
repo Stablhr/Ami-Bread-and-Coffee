@@ -17,14 +17,20 @@ npm run lint         # ESLint
 ## Architecture
 
 ```
-app/(public)/       # Site with header + footer: / (home), /menu, /menu/[slug] (item page), /visit, /account (customers only)
+app/(public)/       # Site with header + footer: / (home), /menu, /menu/[slug] (item page), /visit, /cart,
+                    #   /checkout, /orders/[id], /account (last three customers only)
 app/(auth)/         # sign-in, sign-up, verify-email (?mode=reset for password reset), forgot/reset-password
 app/(admin)/admin/  # Admin area (owner + cashier shared account), guarded in (admin)/layout.tsx
+                    #   /admin/orders (live order list + status buttons)
                     #   /admin/products (list, availability toggle, delete), /new, /[id] (edit)
 components/brand/   # Logo, "ami" wordmark, doodles (asterisk, heart, wavy rule), section heading, brush tag
 components/layout/  # Site header/footer, open-now status, page loading
 components/menu/    # Printed-menu pieces: clickable item row, category block, sampler box, specials shelf, product photo
 components/admin/   # Product form, photo upload field, ingredient tag list, delete dialog, product photo
+components/cart/    # Cart button, add-to-cart / quick add, quantity stepper, order summary
+components/orders/  # Status badge + timeline
+lib/cart/           # Cart store (localStorage), pricing (mirrors backend/api/utils/pricing.ts), live-menu check
+lib/pickup.ts       # Manila pickup days/slots (mirrors backend/api/utils/pickupTime.ts)
 components/auth/    # Form bits (password checklist, messages), RequireRole guard, sign-out button
 components/ui/      # shadcn/ui primitives, restyled to the shop theme
 lib/api/            # httpClient (Axios, auth/CSRF/refresh), authApi, adminMenuApi, menuApi (server fetch, no-store)

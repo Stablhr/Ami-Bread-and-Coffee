@@ -61,6 +61,9 @@ The website still loads without the API, but the menu shows a friendly "menu is 
 | GET | `/api/images/:id` | Uploaded product photo |
 | GET / POST / PATCH / DELETE | `/api/admin/menu`, `/api/admin/menu/items[/:id]` | Admin only: list, add, edit, delete products |
 | POST | `/api/admin/uploads/image` | Admin only: upload a product photo (field `image`) |
+| POST | `/api/orders` | Customer: place a pickup order `{items:[{menuItemId,quantity}], phone, pickupAt, notes}` |
+| GET | `/api/orders/mine`, `/api/orders/:id` | Customer: their orders |
+| GET / PATCH | `/api/admin/orders?status=…`, `/api/admin/orders/:id/status` | Admin: list orders, change status |
 | POST | `/api/auth/register` | firstName, lastName, email, password |
 | POST | `/api/auth/verify` | email + 6-digit code |
 | POST | `/api/auth/login` | sets HTTP-only cookies |

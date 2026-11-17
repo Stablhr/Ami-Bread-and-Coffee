@@ -1,12 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import {ClipboardList, Mail, UserRound} from 'lucide-react';
+import {ChevronRight, ClipboardList, Mail, UserRound} from 'lucide-react';
 import {RequireRole} from '@/components/auth/require-role';
 import {SignOutButton} from '@/components/auth/sign-out-button';
 import {Asterisk, Heart} from '@/components/brand/doodles';
 import {SectionHeading} from '@/components/brand/section-heading';
+import {StatusBadge} from '@/components/orders/status-badge';
 import {buttonVariants} from '@/components/ui/button';
+import {useMyOrders} from '@/lib/hooks/orders/useOrders';
+import {formatPickup} from '@/lib/pickup';
+import {formatPeso} from '@/lib/shop';
 
 export default function AccountPage() {
   return (
@@ -17,11 +21,11 @@ export default function AccountPage() {
             as="h1"
             kicker="hello again"
             title={`Hi, ${user.firstName}!`}
-            description="This is your Ami account. Online pre-ordering is on its way, and your orders will show up here."
+            description="Your Ami account: your details and your orders."
           />
 
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            <section aria-labelledby="profile-heading" className="relative rounded-[1.75rem] border-[3px] border-ink bg-linen p-6">
+          <div className="mt-10 grid gap-6 md:grid-cols-[1fr_1.4fr]">
+            <section aria-labelledby="profile-heading" className="relative self-start rounded-[1.75rem] border-[3px] border-ink bg-linen p-6">
               <Asterisk className="absolute right-5 top-5 size-7 text-ink/60" />
               <h2 id="profile-heading" className="text-2xl">Your details</h2>
               <dl className="mt-4 space-y-3 text-lg">
@@ -39,19 +43,7 @@ export default function AccountPage() {
               </div>
             </section>
 
-            <section aria-labelledby="orders-heading" className="rounded-[1.75rem] border-2 border-dashed border-ink/60 bg-paper-deep/50 p-6">
-              <h2 id="orders-heading" className="flex items-center gap-2 text-2xl">
-                <ClipboardList aria-hidden="true" className="size-6 text-cocoa" />
-                Your orders
-              </h2>
-              <p className="mt-3 font-hand text-xl text-ink">No orders yet.</p>
-              <p className="mt-1 text-ink-soft">
-                Online pre-ordering is coming soon. For now, browse the menu and message us to order.
-              </p>
-              <Link href="/menu" className={`${buttonVariants({size: 'default'})} mt-5`}>
-                Browse the menu
-              </Link>
-            </section>
+            <YourOrders />
           </div>
 
           <p className="mt-12 text-center font-script text-lg text-cocoa">
@@ -60,5 +52,53 @@ export default function AccountPage() {
         </div>
       )}
     </RequireRole>
+  );
+}
+
+function YourOrders() {
+  const {data, isPending, isError} = useMyOrders();
+  const orders = data?.orders ?? [];
+
+  return (
+    <section aria-labelledby="orders-heading" className="rounded-[1.75rem] border-2 border-ink bg-linen p-6">
+      <h2 id="orders-heading" className="flex items-center gap-2 text-2xl">
+        <ClipboardList aria-hidden="true" className="size-6 text-cocoa" />
+        Your orders
+      </h2>
+
+      {isPending ? (
+        <p className="mt-4 text-ink-soft">Loading your orders…</p>
+      ) : isError ? (
+        <p className="mt-4 font-bold text-tomato">We couldn&apos;t load your orders. Please refresh the page.</p>
+      ) : orders.length === 0 ? (
+        <>
+          <p className="mt-3 font-hand text-xl text-ink">No orders yet.</p>
+          <p className="mt-1 text-ink-soft">Add something from the menu to your cart and check out for pickup.</p>
+          <Link href="/menu" className={`${buttonVariants()} mt-5`}>
+            Browse the menu
+          </Link>
+        </>
+      ) : (
+        <ul className="mt-4 divide-y-2 divide-dashed divide-ink/20">
+          {orders.map(order => (
+            <li key={order.id}>
+              <Link href={`/orders/${order.id}`} className="group flex items-center gap-3 py-4">
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="font-bold group-hover:text-cocoa group-hover:underline">{order.orderNumber}</span>
+                    <StatusBadge status={order.status} />
+                  </span>
+                  <span className="mt-1 block text-ink-soft">
+                    Pickup {formatPickup(order.pickupAt)} · {order.items.reduce((n, i) => n + i.quantity, 0)} items ·{' '}
+                    {formatPeso(order.total)}
+                  </span>
+                </span>
+                <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-ink/40 group-hover:text-cocoa" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

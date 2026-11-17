@@ -8,7 +8,7 @@ import {ArrowLeft} from 'lucide-react';
 import {Asterisk, Heart, OpenCircle} from '@/components/brand/doodles';
 import {BrandLockup, LogoGirl, Wordmark} from '@/components/brand/logo';
 import {useMeQuery} from '@/lib/hooks/auth/useMeQuery';
-import {getHomePathFor} from '@/lib/auth/redirects';
+import {afterSignInPath} from '@/lib/auth/redirects';
 import {SHOP} from '@/lib/shop';
 
 export default function AuthLayout({children}: {children: React.ReactNode}) {
@@ -17,7 +17,7 @@ export default function AuthLayout({children}: {children: React.ReactNode}) {
 
   // Already signed in? Skip the forms.
   useEffect(() => {
-    if (isSuccess && data) router.replace(getHomePathFor(data.user.type));
+    if (isSuccess && data) router.replace(afterSignInPath(data.user.type));
   }, [data, isSuccess, router]);
 
   return (

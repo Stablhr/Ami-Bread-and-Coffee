@@ -41,7 +41,9 @@ scripts/             # Seed scripts (seed-admin.ts, seed-menu.ts)
 /api/menu            # GET full menu grouped by category (public)
 /api/menu/items/:slug  # GET one item (public)
 /api/images/:id      # GET an uploaded product photo (public, cached forever, CORP cross-origin)
+/api/orders          # requireAuth + requireCustomer: POST / (place order), GET /mine, GET /:id
 /api/admin/*         # requireAuth + requireAdmin:
+                     #   GET /orders?status=active|completed|cancelled|all, PATCH /orders/:id/status
                      #   GET /menu, POST /menu/items, PATCH /menu/items/:id, DELETE /menu/items/:id,
                      #   POST /uploads/image (multipart field "image", JPG/PNG/WebP, max 2 MB, magic-byte checked)
 ```
