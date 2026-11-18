@@ -8,7 +8,12 @@ const CARDS = [
     body: 'Add, edit or delete products: photos, ingredients, allergens and prices. Mark items sold out.',
     href: '/admin/products'
   },
-  {icon: ClipboardList, title: 'Orders', body: 'See every order, who placed it, and move it from "received" to "ready".'},
+  {
+    icon: ClipboardList,
+    title: 'Orders',
+    body: 'See every order and who placed it, then move it from "received" to "ready" to "picked up".',
+    href: '/admin/orders'
+  },
   {icon: Store, title: 'Shop', body: 'Open/closed switch, hours and contact details.'}
 ];
 

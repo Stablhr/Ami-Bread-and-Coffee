@@ -11,7 +11,7 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {login} from '@/lib/api/authApi';
 import {getFriendlyErrorMessage} from '@/lib/api/getFriendlyErrorMessage';
-import {getHomePathFor} from '@/lib/auth/redirects';
+import {afterSignInPath} from '@/lib/auth/redirects';
 import {meQueryKey} from '@/lib/hooks/auth/useMeQuery';
 
 export default function SignInPage() {
@@ -31,7 +31,7 @@ export default function SignInPage() {
     try {
       const {user} = await login({email: email.trim(), password});
       await queryClient.invalidateQueries({queryKey: meQueryKey});
-      router.push(getHomePathFor(user.type));
+      router.push(afterSignInPath(user.type));
     } catch (error) {
       setErrorMessage(getFriendlyErrorMessage(error, 'We could not sign you in. Please try again.'));
       setIsSubmitting(false);

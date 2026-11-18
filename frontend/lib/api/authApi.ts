@@ -1,10 +1,27 @@
 import {httpClient} from './httpClient';
 
+export type Address = {
+  street: string;
+  barangay: string;
+  city: string;
+  province: string;
+  landmark: string;
+};
+
 type RegisterRequest = {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
+  phone: string;
+  address: Address;
+};
+
+export type ProfileUpdate = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  address: Address;
 };
 
 type RegisterResponse = {
@@ -27,6 +44,9 @@ export type MeUser = {
   firstName: string;
   lastName: string;
   email: string;
+  /** Customers only. Needed before ordering. */
+  phone: string | null;
+  address: Address | null;
 };
 
 type MeResponse = {
@@ -118,4 +138,14 @@ export async function changePassword(params: {
     params
   );
   return res.data;
+}
+
+export async function updateProfile(data: ProfileUpdate) {
+  const res = await httpClient.put<MeResponse>('/auth/profile', data);
+  return res.data;
+}
+
+/** True when a customer has the contact details the shop requires to order. */
+export function hasOrderingProfile(user: MeUser) {
+  return Boolean(user.phone && user.address?.street && user.address.barangay && user.address.city);
 }

@@ -5,11 +5,12 @@ import {Asterisk, Heart, OpenCircle, Sparkle, Swoosh, WavyRule} from '@/componen
 import {LogoGirl, Wordmark} from '@/components/brand/logo';
 import {SectionHeading} from '@/components/brand/section-heading';
 import {MenuUnavailable} from '@/components/menu/menu-unavailable';
+import {ProductPhoto} from '@/components/menu/product-photo';
 import {SamplerBoxCard} from '@/components/menu/sampler-box-card';
+import {SpecialsShelf} from '@/components/menu/specials-shelf';
 import {buttonVariants} from '@/components/ui/button';
 import {getMenu, type MenuItem} from '@/lib/api/menuApi';
 import {formatPeso, MAP_DIRECTIONS_URL, SHOP} from '@/lib/shop';
-import {cn} from '@/lib/utils';
 
 export default async function HomePage() {
   const menu = await getMenu();
@@ -23,12 +24,16 @@ export default async function HomePage() {
   const sampler = menu.ok
     ? menu.categories.find(c => c.slug === 'sampler-box')?.items[0]
     : undefined;
+  const specials = menu.ok
+    ? menu.categories.find(c => c.slug === 'seasonal-specials')?.items ?? []
+    : [];
 
   return (
     <>
       <Hero />
+      {specials.length > 0 && <Specials items={specials} />}
       <Favorites ok={menu.ok} favorites={favorites} />
-      <SamplerFeature price={sampler?.price} />
+      <SamplerFeature price={sampler?.price} href={sampler ? `/menu/${sampler.slug}` : undefined} />
       <HowItWorks />
       <VisitStrip />
     </>
@@ -116,17 +121,18 @@ function Favorites({ok, favorites}: {ok: boolean; favorites: (MenuItem & {catego
       {ok && favorites.length > 0 ? (
         <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {favorites.map((item, index) => (
-            <li
-              key={item.id}
-              className={cn(
-                'group relative rounded-2xl border-2 border-ink bg-linen p-5 transition-transform hover:-translate-y-1',
-                index % 2 === 0 ? 'rotate-[-0.6deg]' : 'rotate-[0.6deg]'
-              )}
-            >
+            <li key={item.id} className={index % 2 === 0 ? 'rotate-[-0.6deg]' : 'rotate-[0.6deg]'}>
+              <Link
+                href={`/menu/${item.slug}`}
+                className="group relative flex h-full flex-col rounded-2xl border-2 border-ink bg-linen p-5 transition-transform hover:-translate-y-1"
+              >
               {/* little punched hole + string, like a bakery tag */}
-              <span aria-hidden="true" className="absolute right-5 top-5 size-3 rounded-full border-2 border-ink bg-paper" />
+              <span aria-hidden="true" className="absolute right-5 top-5 z-10 size-3 rounded-full border-2 border-ink bg-paper" />
+              {item.imageUrl && (
+                <ProductPhoto url={item.imageUrl} alt="" sizes="(min-width: 1024px) 340px, 90vw" className="mb-4 aspect-[4/3] w-full" />
+              )}
               <p className="font-hand text-base tracking-[0.14em] text-ink-soft uppercase">{item.categoryName}</p>
-              <h3 className="mt-2 font-hand text-[1.7rem] leading-tight text-ink">
+              <h3 className="mt-2 flex-1 font-hand text-[1.7rem] leading-tight text-ink group-hover:text-cocoa">
                 {item.name}
                 <Heart className="ml-2 inline size-4 -translate-y-1 text-cocoa" />
               </h3>
@@ -138,6 +144,7 @@ function Favorites({ok, favorites}: {ok: boolean; favorites: (MenuItem & {catego
                   </span>
                 )}
               </div>
+              </Link>
             </li>
           ))}
         </ul>
@@ -155,7 +162,23 @@ function Favorites({ok, favorites}: {ok: boolean; favorites: (MenuItem & {catego
   );
 }
 
-function SamplerFeature({price}: {price?: number}) {
+function Specials({items}: {items: MenuItem[]}) {
+  return (
+    <section aria-labelledby="specials-heading" className="border-b-4 border-double border-ink/70 bg-paper-deep/50">
+      <div className="mx-auto max-w-6xl px-4 py-16 md:px-8">
+        <SectionHeading
+          id="specials-heading"
+          kicker="just for now"
+          title="Seasonal specials"
+          description="Limited-time drinks while the season lasts. Tap one to see what's in it."
+        />
+        <SpecialsShelf items={items} className="mt-10" />
+      </div>
+    </section>
+  );
+}
+
+function SamplerFeature({price, href}: {price?: number; href?: string}) {
   return (
     <section aria-labelledby="sampler-feature-heading" className="border-y-4 border-double border-ink/70 bg-paper-deep/60">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:px-8">
@@ -168,7 +191,7 @@ function SamplerFeature({price}: {price?: number}) {
           />
           <WavyRule className="mt-8 w-48 text-cocoa" />
         </div>
-        <SamplerBoxCard price={price ?? 700} className="mx-auto w-full max-w-md rotate-[1deg] shadow-[6px_6px_0_0_var(--ink)]" />
+        <SamplerBoxCard price={price ?? 700} href={href} className="mx-auto w-full max-w-md rotate-[1deg] shadow-[6px_6px_0_0_var(--ink)]" />
       </div>
     </section>
   );
@@ -177,15 +200,15 @@ function SamplerFeature({price}: {price?: number}) {
 function HowItWorks() {
   const steps = [
     {title: 'Browse the menu', body: 'Breads, scones, toast, focaccia, pasta, snacks and drinks, with prices.'},
-    {title: 'Create your account', body: 'Sign up with your email so we know who your order is for.'},
-    {title: 'Pre-order online', body: 'Pick your items and a pickup time. We are still building this part.', soon: true}
+    {title: 'Create your account', body: 'Sign up with your email, mobile number and address. Only registered customers can order.'},
+    {title: 'Pre-order for pickup', body: 'Add items to your cart, choose a pickup time, and pay when you collect.'}
   ];
   return (
     <section aria-labelledby="how-heading" className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-20">
       <SectionHeading
         id="how-heading"
         kicker="good things take time"
-        title="How ordering will work"
+        title="How ordering works"
         align="center"
       />
       <ol className="mt-12 grid gap-6 md:grid-cols-3">
@@ -199,11 +222,6 @@ function HowItWorks() {
             </span>
             <h3 className="font-hand text-2xl text-ink">
               {step.title}
-              {step.soon && (
-                <span className="ml-2 inline-block -translate-y-0.5 rounded-full border-2 border-cocoa px-2 font-sans text-xs font-extrabold tracking-wider text-cocoa uppercase">
-                  Coming soon
-                </span>
-              )}
             </h3>
             <p className="mt-2 text-ink-soft">{step.body}</p>
           </li>
@@ -213,9 +231,9 @@ function HowItWorks() {
         <Link href="/sign-up" className={buttonVariants({size: 'lg'})}>
           Create an account
         </Link>
-        <a href={SHOP.facebookUrl} target="_blank" rel="noreferrer" className={buttonVariants({variant: 'outline', size: 'lg'})}>
-          Order through Facebook for now
-        </a>
+        <Link href="/menu" className={buttonVariants({variant: 'outline', size: 'lg'})}>
+          See the menu
+        </Link>
       </div>
     </section>
   );

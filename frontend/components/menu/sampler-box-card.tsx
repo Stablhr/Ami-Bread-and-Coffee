@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import {ArrowRight} from 'lucide-react';
 import {formatPeso} from '@/lib/shop';
 import {cn} from '@/lib/utils';
 
@@ -12,7 +14,16 @@ const FLAVORS = [
  * The boxed "Sourdough Sampler Box" from the printed menu, with its four
  * watercolour flavour swatches.
  */
-export function SamplerBoxCard({price = 700, className}: {price?: number; className?: string}) {
+export function SamplerBoxCard({
+  price = 700,
+  href,
+  className
+}: {
+  price?: number;
+  /** Item page, e.g. /menu/sourdough-sampler-box */
+  href?: string;
+  className?: string;
+}) {
   return (
     <section
       aria-labelledby="sampler-heading"
@@ -53,6 +64,17 @@ export function SamplerBoxCard({price = 700, className}: {price?: number; classN
           {formatPeso(price)}
         </p>
       </div>
+      {href && (
+        <div className="mt-4 text-center">
+          <Link
+            href={href}
+            className="inline-flex min-h-11 items-center gap-2 font-bold text-cocoa underline decoration-2 underline-offset-4 hover:text-cocoa-dark"
+          >
+            What&apos;s in the box
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

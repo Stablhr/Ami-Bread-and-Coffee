@@ -23,6 +23,11 @@ export const userRepository = {
   updatePassword: (userId: string, passwordHash: string) =>
     UserModel.updateOne({_id: userId}, {passwordHash}).exec(),
 
+  updateContact: (
+    userId: string,
+    data: Pick<UserDocument, 'firstName' | 'lastName' | 'phone' | 'address'>
+  ) => UserModel.updateOne({_id: userId}, {$set: data}, {runValidators: true}).exec(),
+
   setVerificationCode: (email: string, code: string, expiry: Date) =>
     UserModel.updateOne(
       {email: email.toLowerCase()},

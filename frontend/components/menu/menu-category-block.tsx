@@ -16,7 +16,7 @@ export function MenuCategoryBlock({category}: {category: MenuCategory}) {
       <InkUnderline className="mt-1.5 text-ink/80" />
       <ul className="mt-2">
         {category.items.map(item => (
-          <MenuItemRow key={item.id} item={item} />
+          <MenuItemRow key={item.id} item={item} categoryKey={category.slug} />
         ))}
       </ul>
       {deal && (

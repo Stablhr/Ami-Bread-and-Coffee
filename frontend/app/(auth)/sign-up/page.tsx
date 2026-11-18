@@ -11,11 +11,13 @@ import {
   PasswordChecklist,
   PasswordInput
 } from '@/components/auth/form-bits';
+import {ContactFields, validateContact, type ContactErrors, type ContactValues} from '@/components/account/contact-fields';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {registerCustomer} from '@/lib/api/authApi';
 import {getFriendlyErrorMessage} from '@/lib/api/getFriendlyErrorMessage';
+import {cleanPhone, EMPTY_ADDRESS} from '@/lib/address';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -24,6 +26,8 @@ export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [contact, setContact] = useState<ContactValues>({phone: '', address: EMPTY_ADDRESS});
+  const [contactErrors, setContactErrors] = useState<ContactErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -41,6 +45,12 @@ export default function SignUpPage() {
       setErrorMessage('The two passwords do not match.');
       return;
     }
+    const nextContactErrors = validateContact(contact);
+    setContactErrors(nextContactErrors);
+    if (Object.keys(nextContactErrors).length > 0) {
+      setErrorMessage('Please complete your mobile number and address.');
+      return;
+    }
 
     setIsSubmitting(true);
     setErrorMessage(null);
@@ -49,7 +59,15 @@ export default function SignUpPage() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: email.trim(),
-        password
+        password,
+        phone: cleanPhone(contact.phone),
+        address: {
+          street: contact.address.street.trim(),
+          barangay: contact.address.barangay.trim(),
+          city: contact.address.city.trim(),
+          province: contact.address.province.trim(),
+          landmark: contact.address.landmark.trim()
+        }
       });
       router.push(`/verify-email?email=${encodeURIComponent(email.trim())}`);
     } catch (error) {
@@ -63,7 +81,7 @@ export default function SignUpPage() {
       <AuthHeading
         kicker="nice to meet you"
         title="Create your account"
-        description="With an account you'll be able to pre-order and track your orders once online ordering opens."
+        description="Only registered customers can order. Your mobile number and address help the shop confirm real orders and keep everyone safe from scams."
       />
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
@@ -134,6 +152,20 @@ export default function SignUpPage() {
           />
           {!passwordsMatch && <p className="text-sm font-bold text-tomato">The passwords don&apos;t match yet.</p>}
         </div>
+
+        <fieldset className="space-y-5 rounded-2xl border-2 border-dashed border-ink/30 p-4">
+          <legend className="px-1 font-sans text-base font-extrabold">Contact and address</legend>
+          <p className="text-sm text-ink-soft">Shown only to the shop, to confirm and prepare your orders.</p>
+          <ContactFields
+            value={contact}
+            onChange={next => {
+              setContact(next);
+              setContactErrors({});
+            }}
+            errors={contactErrors}
+            disabled={isSubmitting}
+          />
+        </fieldset>
 
         {errorMessage && <FormMessage tone="error">{errorMessage}</FormMessage>}
 

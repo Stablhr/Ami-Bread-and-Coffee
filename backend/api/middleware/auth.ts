@@ -57,3 +57,13 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction) {
 
   return next();
 }
+/** Only customer accounts (type "user") — the admin account can't place orders. */
+export function requireCustomer(req: Request, _res: Response, next: NextFunction) {
+  if (!req.auth) {
+    return next(new ApiError(401, ErrorCodes.UNAUTHORIZED, 'Not authenticated'));
+  }
+  if (req.auth.type !== 'user') {
+    return next(new ApiError(403, ErrorCodes.FORBIDDEN, 'Only customer accounts can place orders'));
+  }
+  return next();
+}

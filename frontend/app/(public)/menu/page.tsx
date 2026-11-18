@@ -4,6 +4,8 @@ import {LogoGirl, Wordmark} from '@/components/brand/logo';
 import {MenuCategoryBlock} from '@/components/menu/menu-category-block';
 import {MenuUnavailable} from '@/components/menu/menu-unavailable';
 import {SamplerBoxCard} from '@/components/menu/sampler-box-card';
+import {SpecialsShelf} from '@/components/menu/specials-shelf';
+import {GuestOrderNotice} from '@/components/cart/guest-order-notice';
 import {getMenu, type MenuCategory} from '@/lib/api/menuApi';
 import {SHOP} from '@/lib/shop';
 
@@ -11,6 +13,9 @@ export const metadata: Metadata = {
   title: 'Menu',
   description: 'Sourdough breads, scones, toast, focaccia, coffee, pasta and snacks at Ami Bread & Coffee.'
 };
+
+/** Limited-time items, shown as photo cards above the printed menus. */
+const SPECIALS_SLUG = 'seasonal-specials';
 
 /** The two printed menus: the bakery sheet and the café sheet. */
 const BAKERY_SLUGS = ['sourdough-breads', 'sampler-box', 'sourdough-scones', 'sourdough-toast', 'sourdough-focaccia'];
@@ -49,8 +54,9 @@ export default async function MenuPage() {
 }
 
 function MenuSheets({categories}: {categories: MenuCategory[]}) {
+  const specials = categories.find(c => c.slug === SPECIALS_SLUG);
   const bakery = categories.filter(c => BAKERY_SLUGS.includes(c.slug));
-  const cafe = categories.filter(c => !BAKERY_SLUGS.includes(c.slug));
+  const cafe = categories.filter(c => !BAKERY_SLUGS.includes(c.slug) && c.slug !== SPECIALS_SLUG);
 
   return (
     <>
@@ -70,7 +76,22 @@ function MenuSheets({categories}: {categories: MenuCategory[]}) {
         </ul>
       </nav>
 
+      <p className="mt-4 text-center text-ink-soft">Tap any item to see its photo, ingredients and allergens.</p>
+      <GuestOrderNotice className="mt-4" />
+
       <div className="space-y-12 py-10 md:py-14">
+        {specials && specials.items.length > 0 && (
+          <section id={specials.slug} aria-labelledby="specials-heading" className="scroll-mt-28">
+            <div className="text-center">
+              <p className="font-script text-xl text-cocoa">just for now</p>
+              <h2 id="specials-heading" className="mt-3 text-4xl">
+                {specials.name}
+              </h2>
+              {specials.note && <p className="mt-2 font-hand text-xl text-ink-soft">{specials.note}</p>}
+            </div>
+            <SpecialsShelf items={specials.items} className="mt-8" />
+          </section>
+        )}
         {bakery.length > 0 && (
           <MenuSheet title="From the oven" categories={bakery} />
         )}
@@ -96,7 +117,11 @@ function MenuSheet({title, categories}: {title: string; categories: MenuCategory
       <div className="mt-8 gap-x-14 md:columns-2 [&>*]:mb-10">
         {categories.map(category =>
           category.slug === 'sampler-box' && category.items[0] ? (
-            <SamplerBoxCard key={category.slug} price={category.items[0].price} />
+            <SamplerBoxCard
+              key={category.slug}
+              price={category.items[0].price}
+              href={`/menu/${category.items[0].slug}`}
+            />
           ) : (
             <MenuCategoryBlock key={category.slug} category={category} />
           )

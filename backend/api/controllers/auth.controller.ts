@@ -6,6 +6,7 @@ import {ErrorCodes} from '../constants/errorCodes';
 import {env} from '../config/env';
 import {ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE} from '../constants/cookies';
 import {getClientIp} from '../utils/clientIp';
+import {registerDto, updateProfileDto} from '../dtos/auth.dto';
 
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
@@ -22,6 +23,15 @@ function getSessionMeta(req: Request) {
 }
 
 export const authController = {
+  async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const profile = await authService.updateProfile(req.auth!.userId, updateProfileDto.parse(req.body));
+      res.status(200).json({user: {id: req.auth!.userId, type: 'user', ...profile}});
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async me(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.auth) {
@@ -48,7 +58,8 @@ export const authController = {
 
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await authService.register(req.body);
+      // Parse again so phone/address are trimmed and normalised.
+      const result = await authService.register(registerDto.parse(req.body));
       res.status(201).json(result);
     } catch (error) {
       next(error);

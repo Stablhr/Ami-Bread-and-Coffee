@@ -7,6 +7,7 @@ import {Menu as MenuIcon, Phone, UserRound, X} from 'lucide-react';
 import {BrandLockup} from '@/components/brand/logo';
 import {buttonVariants} from '@/components/ui/button';
 import {OpenStatus} from './open-status';
+import {CartButton} from '@/components/cart/cart-button';
 import {useMeQuery} from '@/lib/hooks/auth/useMeQuery';
 import {getHomePathFor} from '@/lib/auth/redirects';
 import {SHOP} from '@/lib/shop';
@@ -109,9 +110,12 @@ export function SiteHeader() {
             </ul>
           </nav>
 
+          <div className="flex items-center gap-3">
           <div className="hidden md:block">
             <AccountArea />
           </div>
+
+          <CartButton />
 
           <button
             type="button"
@@ -123,6 +127,7 @@ export function SiteHeader() {
             {mobileOpen ? <X aria-hidden="true" /> : <MenuIcon aria-hidden="true" />}
             <span className="sr-only">{mobileOpen ? 'Close menu' : 'Open menu'}</span>
           </button>
+          </div>
         </div>
 
         {mobileOpen && (

@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {addressSchema, phMobile} from './contact.dto';
 
 const passwordSchema = z
   .string()
@@ -16,8 +17,21 @@ export const registerDto = z.object({
   lastName: z.string().min(1),
   email: z.string().email(),
   password: passwordSchema,
-  username: z.string().min(1).optional()
+  username: z.string().min(1).optional(),
+  // Required so the shop can contact and verify customers who order.
+  phone: phMobile,
+  address: addressSchema
 });
+
+/** Customer edits their name, mobile number and address. */
+export const updateProfileDto = z
+  .object({
+    firstName: z.string().trim().min(1, 'Enter your first name').max(60),
+    lastName: z.string().trim().min(1, 'Enter your last name').max(60),
+    phone: phMobile,
+    address: addressSchema
+  })
+  .strict();
 
 export const verifyDto = z.object({
   email: z.string().email(),
@@ -57,6 +71,7 @@ export const changePasswordDto = z.object({
 });
 
 export type RegisterDto = z.infer<typeof registerDto>;
+export type UpdateProfileDto = z.infer<typeof updateProfileDto>;
 export type VerifyDto = z.infer<typeof verifyDto>;
 export type ResendVerificationDto = z.infer<typeof resendVerificationDto>;
 export type LoginDto = z.infer<typeof loginDto>;

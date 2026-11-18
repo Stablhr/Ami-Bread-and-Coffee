@@ -18,8 +18,8 @@ Shop details live in `frontend/lib/shop.ts`.
 
 | User | What they can do |
 |---|---|
-| **Guest** (not signed in) | Browse home, menu, visit page. Sees "Create account / Sign in". |
-| **Customer** (registered, email + password) | Everything a guest can, plus their account page. Later: cart, pre-order, track and review orders. |
+| **Guest** (not signed in) | Browse home, menu, item pages, visit page. **Cannot order**: no cart buttons; sees "Sign in to order / Create an account". |
+| **Customer** (registered, email + password, **mobile number + address required**) | Cart, pickup checkout, order tracking, edit details on `/account`. Phone and address are saved on every order so the shop can verify real customers (anti-scam). |
 | **Admin** (one shared account for the owner and the cashier) | Admin dashboard. Later: orders (who ordered what), menu manager, shop settings. |
 
 ## 3. Stack
@@ -73,14 +73,15 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 ### Step 4 — Admin basics
 - [x] `/admin` guarded page (shared owner/cashier account from `npm run seed:admin`).
 - [x] Products manager (`/admin/products`): add, edit, delete; photo upload (resized in the browser, stored in MongoDB); ingredients; allergens; price and bundle deal; favorite; available/sold-out toggle.
-- [ ] Show product photos, ingredients and allergens to customers (clickable menu items).
+- [x] Clickable menu: every item opens `/menu/[slug]` with photo, ingredients, allergens and related items; seasonal specials shown as photo cards on the menu and home page.
 - [ ] Shop settings: open/closed switch, hours, contact.
 
 ### Step 5 — Ordering
-- [ ] Cart (guests are asked to sign in before checkout).
-- [ ] Checkout: pickup or delivery, date/time, notes.
-- [ ] Customer order history + status tracker (received → baking → ready → on the way → completed / cancelled).
-- [ ] Admin orders dashboard: list, who ordered, items, totals, status buttons, auto-refresh.
+- [x] Cart (saved in the browser; guests can fill it, sign-in required at checkout; bundle deals applied).
+- [x] Checkout: pickup only, phone, pickup day/time (7:30 AM–8:30 PM, ≥30 min ahead, ≤7 days), notes, pay at pickup. Backend re-prices from the live menu.
+- [ ] Delivery (needs areas and fees from the owner).
+- [x] Customer order page (`/orders/[id]`, refreshes every 30 s) and order list on `/account`. Statuses: received → preparing → ready → picked up / cancelled.
+- [x] Admin orders (`/admin/orders`): to-do / picked up / cancelled tabs, customer name/phone/email, items, total, pickup time, notes, status buttons, cancel with confirm, auto-refresh every 15 s.
 - [ ] Email notifications for "order received" and "ready".
 
 ### Step 6 — Payments (later)
@@ -97,5 +98,8 @@ Accessibility: text contrast ≥ 4.5:1, 48px touch targets, visible focus ring, 
 7. "Espresso" loaf is "Espresso Choco" on the poster; rename in Admin if that's the real name.
 
 ## 7. Changelog
+- 2026-11-17 — Guests can only browse; registered customers must have mobile number + address (sign-up, `/account`, checkout); address saved on orders and shown in Admin.
+- 2026-11-17 — Cart, checkout (pickup, pay at counter), customer order pages, admin Orders dashboard.
+- 2026-11-16 — Clickable menu with item pages. Website proxies `/api/*` to the backend so login works on Vercel.
 - 2026-11-15 — Admin products manager (add/edit/delete, photos, ingredients, allergens, prices). Seasonal Specials added from posters. `seed:menu` no longer overwrites admin edits.
 - 2026-11-14 — Restarted the project: single MongoDB backend, rebuilt frontend in the "fresh from home" vintage style; home, menu, visit, auth, account and admin placeholder done; menu seeded from the printed menus.
